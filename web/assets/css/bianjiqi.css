@@ -1,0 +1,26 @@
+#c {
+    border: 1px solid #000;
+}
+
+.button{
+    font-weight: bold;
+    color: #000;
+}
+
+.fileLabel{
+    display: inline-block;
+    width:180px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    border: 1px solid #8cc051;
+    border-radius: 5px;
+    background: #8cc051;
+    cursor: pointer;
+}
+.fileInput{display: none;}
+
+.img {
+    height: 50px;
+
+}
