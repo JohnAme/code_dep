@@ -15,3 +15,12 @@
     float: right;
     background-color: #563d7c;
 }
+
+#searchForm {
+    padding-top: 20px;
+    margin-top: 10px;
+}
+
+#searchForm {
+    margin-top: 20px;
+}
