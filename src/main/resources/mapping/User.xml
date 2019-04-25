@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+        namespace="com.se.dal.UserRepository">
+    <sql id="userColumns"> uid,uname,signature,loc,email </sql>
+
+    <select id="findFriends" resultType="User">
+      SELECT
+          user.uid,user.uname,user.signature,user.loc,user.email
+      FROM user,friend WHERE friend.uid=#{uid} AND friend.friend_id=user.uid
+    </select>
+    <select id="validateUser" resultType="boolean">
+      SELECT uid,password FROM user WHERE uid=#{uid}
+      <if test="password != null">
+        AND password LIKE #{password}
+      </if>
+    </select>
+    <select id="findUserByUID" resultType="User">
+      SELECT
+        <include refid="userColumns"/>
+      FROM user WHERE uid=#{uid}
+    </select>
+    <select id="findUserByUname" resultType="User">
+      SELECT
+        <include refid="userColumns"/>
+      FROM user WHERE uname LIKE #{uname}
+    </select>
+
+    <insert id="insertUser" parameterType="User" useGeneratedKeys="true">
+        INSERT INTO user (uname,signature,loc,email,password)
+        VALUES (#{uname},#{signature},#{loc},#{email},#{password})
+    </insert>
+    <insert id="addFriend">
+        INSERT INTO friend(uid,friend_id) VALUES(#{uid},#{friendId}),(#{friendId},#{uid})
+    </insert>
+    <update id="updateUser" parameterType="User">
+        UPDATE user SET
+          uname=#{uname},
+          signature#{signature},
+          loc=#{loc},
+          email=#{email},
+          password = #{password}
+        WHERE uid=#{uid}
+    </update>
+    <delete id="deleteUser">
+        DELETE FROM user WHERE uid=#{uid}
+    </delete>
+
+</mapper>
