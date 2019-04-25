@@ -99,36 +99,14 @@ $(function(){
             title: 'isVerified',
             align: 'center',
             events: window.operateEvents,
-            // formatter: operateFormatter
+            formatter: operateFormatter
         }],
         data: json,
         onDblClickRow: function (row, $element, field) {
-            // alert(row.score);
-            // alert(row.class);
             var modal = $("#verify");
             modal.modal();
             modal.find('.modal-body label').innerText = row.class;
         }
-    });
-
-
-    $("#recentProjects").bootstrapTable({
-        columns: [{
-            field: "Project Name",
-            title: 'Project Name'
-        }, {
-            field: 'Operation Time',
-            title: 'Operation Time'
-        },{
-            field: 'Operate',
-            title: 'Operate',
-            align: 'center',
-            events: window.operateEvents,
-            // formatter: operateFormatter
-        }],
-        data: recentProjects,
-        striped : true,
-        height: 300
     });
 });
 
