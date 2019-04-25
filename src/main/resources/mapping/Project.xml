@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+        namespace="com.se.dal.ProjectRepository">
+    <resultMap id="simpleProjectRM" type="Project">
+        <id property="pid" column="pid"/>
+        <result property="pname" column="pname"/>
+        <result property="ownerId" column="owner_id"/>
+    </resultMap>
+    <resultMap id="classRM" type="MyClass">
+        <id property="classId" column="class_id"/>
+        <result property="pid" column="pid"/>
+        <result property="path" column="path"/>
+        <result property="className" column="class_name"/>
+        <result property="content" column="class_text"/>
+    </resultMap>
+    <resultMap id="ucRM" type="UCase">
+        <id property="pid" column="pid"/>
+        <id property="ucId" column="uc_id"/>
+        <result property="content" column="uc_text"/>
+    </resultMap>
+    <resultMap id="detailedProjectRM" type="Project">
+        <id property="pid" column="pid"/>
+        <result property="pname" column="pname"/>
+        <result property="ownerId" column="owner_id"/>
+        <collection property="code" ofType="MyClass" column="pid" select="findCodeByPId"/>
+        <collection property="document" ofType="UCase" column="pid" select="findDocByPId"/>
+    </resultMap>
+
+    <select id="findProjectsByUId" resultMap="simpleProjectRM">
+        SELECT project.pid,project.pname,project.owner_id
+        FROM project INNER JOIN user ON project.owner_id=user.uid WHERE owner_id=#{uid}
+    </select>
+    <select id="findProjectsWithCodeAndDocByUId" resultMap="detailedProjectRM">
+        SELECT * FROM project WHERE owner_id=#{uid}
+    </select>
+    <select id="findUserGroupByPId" resultType="User">
+        SELECT user.uid,user.uname FROM colleague
+        LEFT JOIN user on user.uid = colleague.uid
+        WHERE colleague.pid=#{pid}
+    </select>
+    <select id="findCodeByPId" resultMap="classRM">
+        SELECT pid,class_name,path,class_text,class_id FROM class WHERE pid=#{pid}
+    </select>
+    <select id="findDocByPId" resultMap="ucRM">
+        SELECT pid,uc_id,uc_text FROM uc WHERE pid=#{pid} ORDER BY uc_id ASC
+    </select>
+
+    <insert id="insertProject" parameterType="Project" useGeneratedKeys="true">
+      INSERT INTO project (pname,owner_id) VALUES (#{pname},#{ownerId})
+    </insert>
+
+</mapper>
