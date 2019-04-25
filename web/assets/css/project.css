@@ -1,0 +1,12 @@
+.button-list{
+    float: right;
+}
+
+.button-primary:first-child {
+    margin-top : 20px;
+}
+
+.button-primary {
+    background-color: #563d7c;;
+    margin-bottom: 10px;
+}
