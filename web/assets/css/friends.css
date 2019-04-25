@@ -1,24 +1,6 @@
-.button-list{
-    float: left;
-}
-
-.button-primary:first-child {
-    margin-top : 20px;
-}
-
-.button-primary {
-    background-color: #563d7c;;
-    margin-bottom: 10px;
-}
-
-.t-icon {
-    /*height: 30px;*/
-    /*width : 30px;*/
-    border-radius: 10px;
-}
-
-a {
-    cursor: pointer;
+.friends-list {
+    border-bottom: 1px solid #dcdcdc;
+    float: right;
 }
 
 .d-table-cell {
@@ -58,22 +40,8 @@ a {
 
 .friends-address {
     display: inline;
-    margin-bottom: 20px;
 }
 
 .item {
     display: block;
-}
-
-
-.col-md-9 {
-    float: right;
-}
-
-.icon {
-    size: 50px;
-}
-
-.dropdown {
-    display: inline-block;
 }

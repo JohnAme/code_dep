@@ -20,6 +20,7 @@
           <element id="library" level="project" name="Maven: ch.qos.logback:logback-core:1.2.3" />
           <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.25" />
         </element>
+        <element id="dir-copy" path="/usr/local/apache-tomcat-9.0.2/webapps" />
       </element>
       <element id="javaee-facet-resources" facet="code_dep/web/Web" />
     </root>

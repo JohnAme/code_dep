@@ -5,18 +5,25 @@ $(function () {
 });
 
 var recentOperations = [
-    {"Project Name":"test_1.0_SNAPSHOT.jar","Operation Time":"2019-04-03 16:03:25","Operate":""},
-    {"Project Name":"test_1.0_SNAPSHOT.jar","Operation Time":"2019-04-03 16:03:25","Operate":""},
-    {"Project Name":"test_1.0_SNAPSHOT.jar","Operation Time":"2019-04-03 16:03:25","Operate":""},
-    {"Project Name":"test_1.0_SNAPSHOT.jar","Operation Time":"2019-04-03 16:03:25","Operate":""},
-    {"Project Name":"test_1.0_SNAPSHOT.jar","Operation Time":"2019-04-03 16:03:25","Operate":""},
-    {"Project Name":"test_1.0_SNAPSHOT.jar","Operation Time":"2019-04-03 16:03:25","Operate":""},
-    {"Project Name":"test_1.0_SNAPSHOT.jar","Operation Time":"2019-04-03 16:03:25","Operate":""},
-    {"Project Name":"test_1.0_SNAPSHOT.jar","Operation Time":"2019-04-03 16:03:25","Operate":""},
-    {"Project Name":"test_1.0_SNAPSHOT.jar","Operation Time":"2019-04-03 16:03:25","Operate":""}
+    {"project":"test_1.0_SNAPSHOT.jar","Operation_time":"2019-04-03 16:03:25","partner":['KJlmfe','Grit'],"Operate":""},
+    {"project":"test_2.0_SNAPSHOT.jar","Operation_time":"2019-04-04 16:03:25","partner":"Grit","Operate":""},
+    {"project":"test_3.0_SNAPSHOT.jar","Operation_time":"2019-04-05 16:03:25","partner":"Eric","Operate":""},
+    {"project":"test_4.0_SNAPSHOT.jar","Operation_time":"2019-04-06 16:03:25","partner":['KJlmfe','Eric','Grit'],"Operate":""},
+    {"project":"test_5.0_SNAPSHOT.jar","Operation_time":"2019-04-07 16:03:25","partner":"MinamiKotori","Operate":""},
+    {"project":"test_6.0_SNAPSHOT.jar","Operation_time":"2019-04-08 16:03:25","partner":"","Operate":""},
+    {"project":"test_7.0_SNAPSHOT.jar","Operation_time":"2019-04-09 16:03:25","partner":['Eric','MinamiKotori'],"Operate":""},
+    {"project":"test_8.0_SNAPSHOT.jar","Operation_time":"2019-04-10 16:03:25","partner":"KJlmfe","Operate":""},
+    {"project":"test_9.0_SNAPSHOT.jar","Operation_time":"2019-04-11 16:03:25","partner":"Eric","Operate":""}
 ];
 
+var users = [
+    {"name":"KJlmfe","photo":"KJlmfe.jpeg","tag":"Enjoy coding","address":"Nanjing"},
+    {"name":"Grit","photo":"Gtit.jpeg","tag":"I love new things.","address":"Shanghai"},
+    {"name":"Eric","photo":"Eric.jpeg","tag":"NJU student","address":"Nanjing"},
+    {"name":"MinamiKotori","photo":"MinamiKotori.jpeg","tag":"I have nothing to do.","address":"Nanjing"}
+];
 
+    //初始化Table
 var TableInit = function () {
     var oTableInit = new Object();
     //初始化Table
@@ -50,31 +57,24 @@ var TableInit = function () {
             detailView: false,                   //是否显示父子表
             columns: [
                 {
-                    field: 'Project Name',
+                    field: 'project',
                     title: '项目名称'
                 }, {
-                    field: 'Operation Time',
+                    field: 'Operation_time',
                     title: '操作时间'
+                }, {
+                    field: 'partner',
+                    title: '合作好友',
+                    formatter : partner
                 }, {
                     field: 'Operate',
                     title: '操作',
-                    formatter: operateFormatter //自定义方法，添加操作按钮
+                    events: window.buttonEvents,
+                    formatter: operateButtons //自定义方法，添加操作按钮
                 },
             ],
-            // rowStyle: function (row, index) {
-            //     var classesArr = ['success', 'info'];
-            //     var strclass = "";
-            //     if (index % 2 === 0) {//偶数行
-            //         strclass = classesArr[0];
-            //     } else {//奇数行
-            //         strclass = classesArr[1];
-            //     }
-            //     return { classes: strclass };
-            // },//隔行变色
         });
-
     };
-
 
     //得到查询的参数
     oTableInit.queryParams = function (params) {
@@ -87,11 +87,113 @@ var TableInit = function () {
     return oTableInit;
 };
 
-
-function operateFormatter(value, row, index) {//赋予的参数
+function operateButtons(value, row, index) {//赋予的参数
     return [
-        '<a class="btn" href="#">分享</a>',
-        '<a class="btn" href="#">查看依赖</a>',
-        '<a class="btn btn-danger" href="#">删除</a>',
+        '<div class="dropdown"><a class="btn add dropdown-toggle" data-toggle="dropdown">添加</a>' +
+        '<ul class="dropdown-menu">\n' +
+        '<li><a class="user" href="#" onclick="addPartner($(this).text())">'+users[0].name+'</a></li>\n' +
+        '<li><a class="user" href="#" onclick="addPartner($(this).text())">'+users[1].name+'</a></li>\n' +
+        '<li><a class="user" href="#" onclick="addPartner($(this).text())">'+users[2].name+'</a></li>\n' +
+        '<li><a class="user" href="#" onclick="addPartner($(this).text())">'+users[3].name+'</a></li>\n' +
+        '</ul></div>',
+        '<a class="btn">查看依赖</a>',
+        '<a class="btn btn-danger">删除</a>'
     ].join('');
+}
+
+var curOp = "";
+
+function addPartner(username) {
+    curOp = username;
+}
+
+window.buttonEvents = {
+    'click .like': function (e, value, row, index) {
+        alert(row.project);
+    },
+    'click .remove': function (e, value, row, index) {
+
+    },
+    'click .add': function (e, value, row, index) {
+        // var curPartner = row.partner;
+        // console.log(curPartner);
+    },
+    'click .user': function (e, value, row, index) {
+        var curPartner = row.partner;
+        if((typeof curPartner) == 'string'){
+            if(curPartner == curOp){
+                alert("该好友已存在");
+            }else{
+                var time = row.Operation_time;
+                var arr = recentOperations.filter(function(p){
+                    return p.Operation_time === time;
+                });
+                arr[0].partner = "sdsd";
+                // arr[0].partner.splice(0,0,curPartner);
+            }
+        }
+    }
+};
+
+// 填充表格的合作好友一列
+function partner(value,row,index) {
+    if(recentOperations[index].partner.length==0){
+        return;
+    }
+    var first = true;
+    if((typeof recentOperations[index].partner) == 'string'){
+        return [
+            '<a class="t-partner" data-toggle="popover" title=' + recentOperations[index].partner + '>' + recentOperations[index].partner + '</a>',
+        ].join('');
+    }else {
+        var result = '';
+        var arr = recentOperations[index].partner;
+        for (var i=0;i<arr.length;i++){
+            if(first == false){
+                result = result + ' | ';
+            }
+            first = false;
+            result = result + '<a class="t-partner" data-toggle="popover" data-title=' + recentOperations[index].partner[i] + '>' + recentOperations[index].partner[i] + '</a>';
+        }
+        return [result].join('');
+    }
+}
+
+// $(function () {
+//     $("[data-toggle='popover']").popover({
+//         trigger : 'hover',
+//         placement : 'top',
+//         html : true,
+//         content : ContentMethod($(".popover:hover").html())
+//     });
+// });
+
+$(function () {
+    $('[data-toggle="popover"]').each(function () {
+        var element = $(this);
+        var name = element.html();
+        element.popover({
+            trigger: 'hover',
+            placement: 'top',
+            title: name,
+            html: 'true',
+            content: ContentMethod(name),
+        });
+    });
+});
+
+function ContentMethod(name) {
+    var curUser = users.filter(function(p){
+        return p.name === name;
+    });
+    curUser = curUser[0];
+    return '<div class="d-table-cell col-md-3">\n' +
+        '<img class="icon" src="assets/picture/' + name + '.jpeg" alt="">\n' +
+        '</div>\n' +
+        '<div class="col-md-9">\n' +
+        '<div class="friends-name">' + name + '</div>\n' +
+        '<div class="friends-tag">' + curUser.tag + '</div>\n' +
+        '<img class="address-icon" src="assets/picture/address-icon.png" alt="">\n' +
+        '<div class="friends-address">'+ curUser.address +'</div>\n' +
+        '</div>';
 }
