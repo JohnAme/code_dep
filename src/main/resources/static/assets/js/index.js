@@ -83,7 +83,7 @@ $(function(){
         })
     });
 
-    /*初始化table数据*/
+    /*初始化table数据
     $("#sth").bootstrapTable({
         columns: [{
             field: "class",
@@ -107,7 +107,7 @@ $(function(){
             modal.modal();
             modal.find('.modal-body label').innerText = row.class;
         }
-    });
+    });*/
 });
 
 // $("#login_modal").on('hidden.bs.modal',function(){

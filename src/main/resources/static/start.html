@@ -265,8 +265,57 @@
             }
         });
     }
+
+    $(function(){
+        function showCandidateList(pid) {
+            $.get("/trace/getCandidateList?pid="+encodeURIComponent(pid),
+                function (data) {
+                    $("#sth").bootstrapTable({
+                        columns: [{
+                            field: "_class",
+                            title: 'class',
+                        }, {
+                            field: 'score',
+                            title: 'score'
+                        }, {
+                            field: 'effect',
+                            title: 'effect'
+                        },{
+                            field: 'isVerified',
+                            title: 'isVerified',
+                            align: 'center',
+                            events: window.operateEvents,
+                            formatter: operateFormatter
+                        }],
+                        data: data,
+                        onDblClickRow: function (row, $element, field) {
+                            var modal = $("#verify");
+                            modal.modal();
+                            modal.find('.modal-body label').innerText = row.class;
+                        }
+                    });
+                },"json");
+
+            return true;
+        }
+
+        function showProjectDir(pid,pname){
+            $.get("/trace/getProjectDir?pid="+encodeURIComponent(pid)+"&pname="+encodeURIComponent(pname),
+            function (data) {
+                $("#tree").treeview({
+                    data: [data]
+                });
+            },"json");
+            alert("tree view");
+        }
+
+        showProjectDir(6,"movies-java-spring-data-neo4j-master");
+        showCandidateList(6);
+    })
+
+
+
+
 </script>
-
-
 
 </html>

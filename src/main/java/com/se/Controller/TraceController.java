@@ -17,7 +17,7 @@ public class TraceController {
 
     @RequestMapping("/start")
     public String lab(){
-        System.out.println("lab1");
+//        System.out.println("lab1");
         return "start";
     }
     @RequestMapping("/project")

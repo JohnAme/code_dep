@@ -12,7 +12,8 @@ function getTree() {
                     nodes: [{
                         text: "dao",
                         nodes:[{
-                            text:"DBSqlSession"
+                            text:"DBSqlSession",
+
                         }]
                     }, {
                         text: "model"
@@ -39,8 +40,9 @@ function getTree() {
 
     return tree;
 }
-
+/*
 $('#tree').treeview({
     data: getTree(),
     backColor: 'white'
 });
+*/

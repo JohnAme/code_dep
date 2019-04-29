@@ -27,6 +27,8 @@ public class MovieController {
 		this.movieService = movieService;
 	}
 
+
+
     @GetMapping("/graph")
 	public Map<String, Object> graph(@RequestParam(value = "limit",required = false) Integer limit) {
 		System.out.println(userService.getFriends(1000000).size());

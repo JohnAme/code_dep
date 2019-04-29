@@ -26,7 +26,4 @@ spring:
   mvc:
     view:
       suffix: .html
-  devtools:
-    restart:
-      additional-exclude: /static
 
