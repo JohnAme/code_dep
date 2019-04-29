@@ -15,7 +15,7 @@ import java.util.Map;
  * @author Michael J. Simons
  */
 @RestController
-@RequestMapping("/")
+@RequestMapping("/movie")
 public class MovieController {
 
 	private final MovieService movieService;

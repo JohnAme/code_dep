@@ -32,7 +32,7 @@
     /* 完整DOM结构 --s-- */
     /*
     <iframe id="uploadIfr" name="uploadIfr" class="crop-upload-ifr"></iframe>
-    <form action="index.html" enctype="multipart/form-data" method="post" target="uploadIfr">
+    <form action="graph.html" enctype="multipart/form-data" method="post" target="uploadIfr">
         <input type="hidden" name="cropData">
         <div class="crop-picker-wrap">
             <button class="crop-picker" type="button">选择图片</button>
