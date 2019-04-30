@@ -63,7 +63,7 @@ public class StartController {
                                         @RequestParam(value="pname",required = true)String pname){
         List<MyClass> code=projectManageService.getCode(pid);
         List<Path> pathList=new ArrayList<>();
-        System.out.format("size:%d%n",code.size());
+
         for(MyClass myClass:code){
             String path=String.format("%s\\%s",myClass.getPath(),myClass.getClassName());
 //            System.out.format("path:%s%s\n",pname,path);
@@ -71,7 +71,12 @@ public class StartController {
         }
         TreeViewUtil root=new TreeViewUtil(pname);
         root.build(pathList);
-
         return new ResponseEntity<TreeViewUtil>(root,HttpStatus.OK);
+    }
+
+    @GetMapping("/uc")
+    @ResponseBody
+    public String getUC(){
+        return projectManageService.getTempUC();//todo ask Gao
     }
 }

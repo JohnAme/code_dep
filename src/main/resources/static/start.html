@@ -84,10 +84,9 @@
         <div class="col-md-5 middle-area">
             <div class="text-select">
                 <select>
-                    <option value="a">Volvo</option>
-                    <option value="b">Saab</option>
-                    <option value="c">Opel</option>
-                    <option value="d">Audi</option>
+                    <option value="a">Vector Space Model</option>
+                    <option value="b">Latent Semantic Indexing</option>
+                    <option value="c">Jensen and Shannon</option>
                 </select>
             </div>
             <table id="sth">
@@ -306,9 +305,18 @@
                     data: [data]
                 });
             },"json");
-            alert("tree view");
+
         }
 
+        function showUc(){//todo
+            $.get("/trace/uc",
+            function(data){
+                $("p#box").css("white-space","pre-wrap");
+                $("p#box").text(data);
+            });
+        }
+
+        showUc();
         showProjectDir(6,"movies-java-spring-data-neo4j-master");
         showCandidateList(6);
     })

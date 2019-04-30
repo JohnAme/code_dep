@@ -4,6 +4,7 @@ import com.se.dal.ProjectRepository;
 import com.se.entity.MyClass;
 import com.se.service.ProjectManageService;
 import com.se.util.CandidateEntry;
+import com.se.util.TempUcUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,5 +37,10 @@ public class ProjectManageServiceImp implements ProjectManageService {
     @Override
     public List<MyClass> getCode(long pid) {
         return projectRepository.findCodeByPId(pid);
+    }
+
+    @Override
+    public String getTempUC() {
+        return TempUcUtil.uc18;
     }
 }

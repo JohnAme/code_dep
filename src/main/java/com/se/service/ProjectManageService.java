@@ -11,4 +11,6 @@ public interface ProjectManageService {
 
     List<MyClass> getCode(long pid);
 
+    String getTempUC();//todo For UC file format ask Gao
+
 }

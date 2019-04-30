@@ -9,21 +9,24 @@ import javax.servlet.http.HttpServletRequest;
 
 @Controller()
 @RequestMapping(value="/")
-public class TraceController {
-    @GetMapping(value="/")
+public class HomeController {
+    @GetMapping(value="/index")
     public String index(){
         return "index";
     }
 
     @RequestMapping("/start")
-    public String lab(){
+    public String start(){
 //        System.out.println("lab1");
         return "start";
     }
     @RequestMapping("/project")
-    public String lab2(){
-        System.out.println("lab3");
+    public String project(){
         return "project";
+    }
+    @RequestMapping("/friends")
+    public String friends(){
+        return "friends";
     }
 
 
