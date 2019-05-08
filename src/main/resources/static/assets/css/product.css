@@ -1,0 +1,26 @@
+.text-select{
+    margin-bottom: 10px;
+}
+
+.middle-area{
+    margin-top: 10px;
+    border-left: 2px solid #563d7c;
+}
+
+.row-red{
+    background-color: #b92c28;
+}
+
+#submit-button{
+    float: right;
+    background-color: #563d7c;
+}
+
+#searchForm {
+    padding-top: 20px;
+    margin-top: 10px;
+}
+
+#searchForm {
+    margin-top: 20px;
+}

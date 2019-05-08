@@ -1,0 +1,14 @@
+.w-rec {
+    height: 200px;
+    display: inline-block;
+}
+
+.previewImg {
+    margin-top: 5px;
+    width :85%;
+    display: block;
+}
+
+.row-list {
+    text-align: center;
+}
