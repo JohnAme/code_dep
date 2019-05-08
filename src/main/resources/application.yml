@@ -1,11 +1,17 @@
+server:
+  servlet:
+    context-path: /trace
 mybatis:
   typeAliasesPackage: com.se.entity
   mapperLocations: classpath:/mapping/*.xml
+file:
+  location: D:\\repository\\store
 spring:
   servlet:
     multipart:
-      max-file-size: 100Mb
-      maxRequestSize: 1000Mb
+      max-file-size: 100MB
+      maxRequestSize: 128MB
+      enabled: true
   datasource:
     url: jdbc:mysql://localhost:3306/code_dep?characterEncoding=utf-8&serverTimezone=UTC
     driverClassName: com.mysql.cj.jdbc.Driver
@@ -17,6 +23,7 @@ spring:
       uri: bolt://localhost:11107
       username: neo4j
       password: 123
-  output:
-    ansi:
-      enabled: always
+  mvc:
+    view:
+      suffix: .html
+

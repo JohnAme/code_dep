@@ -1,174 +1,241 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="http://neo4j-contrib.github.io/developer-resources/language-guides/assets/css/main.css">
-    <title>Neo4j Graph</title>
+    <meta charset="UTF-8">
+    <title>Requirements' traceable Query tool</title>
+
+    <link href="lib/css/bootstrap.css" rel="stylesheet"/>
+    <link href="lib/css/bootstrap-table.css" rel="stylesheet"/>
+    <link href="assets/css/docs.css" rel="stylesheet"/>
+    <link href="assets/css/style.css" rel="stylesheet"/>
+    <link href="assets/css/index.css" rel="stylesheet"/>
 </head>
-
-<body>
-<div id="graph">
-</div>
-<div role="navigation" class="navbar navbar-default navbar-static-top">
+<body onload="checkCookie()">
+<div class="navbar navbar-static-top bs-docs-nav">
     <div class="container">
-        <div class="row">
-            <div class="col-sm-6 col-md-6">
-                <ul class="nav navbar-nav">
-                    <li>
-                        <!--
-                        <form role="search" class="navbar-form" id="search">
-                            <div class="form-group">
-                                <input type="text" value="Green" placeholder="" class="form-control" name="search">
-                            </div>
-                            <button class="btn btn-default" type="submit">Search</button>
-                        </form>-->
-                    </li>
-                </ul>
-            </div>
-            <div class="navbar-header col-sm-6 col-md-6">
-                <div class="logo-well">
-                    <a href="https://neo4j.com/developer">
-                        <img src="http://neo4j-contrib.github.io/developer-resources/language-guides/assets/img/logo-white.svg" alt="Neo4j World's Leading Graph Database" id="logo">
+        <div class="navbar-header">
+            <a href="index" class="navbar-brand">Requirements Tracing</a>
+        </div>
+        <nav id="bs-navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="start">start</a>
+                </li>
+                <li><a href="project">project</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a id="nav_login" href="#" data-toggle="modal" data-target="#login_modal">login</a></li>
+                <li><a id="nav_register" href="#" data-toggle="modal" data-target="#register_modal">register</a></li>
+                <!--<li><a id="nav_user" href="">aa</a></li>-->
+                <li class="dropdown">
+                    <a id="nav_user" href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        Java
+                        <b class="caret"></b>
                     </a>
-                </div>
-                <div class="navbar-brand">
-                    <div class="brand">Neo4j Graph</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <!--
-    <div class="col-md-7">
-        <div class="panel panel-default">
-            <div class="panel-heading">Search Results</div>
-            <table id="results" class="table table-striped table-hover">
-                <thead>
-                <tr>
-                    <th>Movie</th>
-                    <th>Released</th>
-                    <th>Tag</th>
-                </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    -->
-    <!--
-    <div class="col-md-7">
-        <div class="panel panel-default">
-            <div class="panel-heading" id="title">Details</div>
-            <div class="row">
-                <div class="col-sm-4 col-md-4">
-                    <img src="" class="well" id="poster"/>
-                </div>
-                <div class="col-md-8 col-sm-8">
-                    <h4>Description</h4>
-                    <ul id="crew">
+                    <ul class="dropdown-menu">
+                        <li><a href="project">your projects</a></li>
+                        <li><a href="index" onclick="deleteCookies()">sign out</a></li>
                     </ul>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<main class="bs-docs-masthead" id="content" tabindex="-1">
+    <div class="container">
+        <h1>Requirements' Traceable Query Tool</h1>
+        <br/>
+        <p class="lead">Requirements' Traceable Query Tool是致力于帮助客户简洁高效地完成需求追踪，以期提升产品质量的 WEB 项目。</p>
+        <br/>
+        <p class="version">当前版本： v0.0.1 | 文档更新于：2019-1-12</p>
+        <div id="tuijian"></div>
+    </div>
+</main>
+
+<div class="container">
+    <div class="col-md-2">
+
+    </div>
+    <div id="test" class="col-md-3 keywords">
+        <h2>易用</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iusto!</p>
+    </div>
+
+    <div class="col-md-3 keywords">
+        <h2>灵活</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quae.</p>
+    </div>
+
+    <div class="col-md-3 keywords">
+        <h2>高效</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officia.</p>
+    </div>
+    <div class="col-md-1">
+
+    </div>
+</div>
+
+<div id="main">
+    <div role="main" id="main-content">
+        <!-- Swimlanes -->
+        <div class="swimlane-container">
+            <div id="meet-intellisense" class="swimlane">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-5 col-sm-push-1 tablediv">
+                            <table id="recentProjects">
+                            </table>
+                        </div>
+                        <div class="col-sm-7 col-sm-push-2">
+                            <h2>Recent Items</h2>
+                            <p>This is the project you have recently operated, you can click to view the dependency
+                                before the operation continues.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="powerful-debugging" class="swimlane">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-4 col-sm-push-8">
+                            <!--<img src='/assets/images/home-debug.svg' alt="Debugging" class="screenshot"/>-->
+                        </div>
+                        <div class="col-sm-7 col-sm-pull-4">
+                            <h2>Print statement debugging is a thing of the past.</h2>
+                            <p>Debug code right from the editor. Launch or attach to your running apps and debug with
+                                break points, call stacks, and an interactive console.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="built-in-git" class="swimlane">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <img src='/assets/images/home-git.svg' alt="Git" class="screenshot"/>
+                        </div>
+                        <div class="col-sm-7 col-sm-push-1">
+                            <h2>Git commands built-in.</h2>
+                            <p>Working with Git and other SCM providers has never been easier. Review diffs, stage
+                                files, and make commits right from the editor. Push and pull from any hosted SCM
+                                service.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="hundreds-of-extensions" class="swimlane hundreds-extensions">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-4 col-sm-push-8">
+                            <a id="home-marketplace-link" href="https://marketplace.visualstudio.com/VSCode"
+                               target="_blank">
+                                <!--<img src="/assets/images/Hundreds-of-Extensions.png" class="hundreds-extensions-img"-->
+                                                    <!--alt="Easily use extensions in VS Code"/></a>-->
+                            </a>
+                        </div>
+                        <div class="col-sm-7 col-sm-pull-4">
+                            <h2>Extensible and customizable.</h2>
+                            <p>Want even more features? Install extensions to add new languages, themes, debuggers, and
+                                to connect to additional services. Extensions run in separate processes, ensuring they
+                                won't slow down your editor.
+                                <!--<a id="home-extension-gallery-doc-link" href="/docs/editor/extension-gallery">-->
+                                    <!--Learn more about extensions.</a>-->
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
+
     </div>
-    -->
 </div>
-<style type="text/css">
-    .node { stroke: #222; stroke-width: 1.5px; }
-    .node.actor { fill: #2b669a; }
-    .node.movie { fill: #8cc051; }
-    .link { stroke: #9ecae1; stroke-opacity: .6; stroke-width: 2px;stroke-dasharray: 10,2;}
 
+<!--注册-->
+<div class="modal fade" id="register_modal" tabindex="-1" role="dialog" aria-labelledby="registerLabel" aria-hidden="true"
+     data-backdrop="false">
+    <div class="modal-dialog" style="width:400px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="registerLabel">
+                    Register
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-group" action="">
+                    <div class="form-group">
+                        <label for="">Username</label>
+                        <input class="form-control" type="text" placeholder="6-15位字母或数字">
+                    </div>
+                    <div class="form-group">
+                        <label for="">Password</label>
+                        <input class="form-control" type="password" placeholder="至少6位字母或数字">
+                    </div>
+                    <div class="form-group">
+                        <label for="">Password Again</label>
+                        <input class="form-control" type="password" placeholder="至少6位字母或数字">
+                    </div>
+                    <div class="text-right">
+                        <button id="registerSubmit" class="btn btn-primary modal-submit" type="submit">提交</button>
+                        <button class="btn btn-default" data-dismiss="modal">取消</button>
+                    </div>
+                    <a id="jump2login" href="" data-toggle="modal" data-dismiss="modal"
+                       data-target="#login_modal">已有账号？点我登录</a>
+                </form>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
 
-</style>
+<!--登陆-->
+<div class="modal fade" id="login_modal" tabindex="-1" role="dialog" aria-labelledby="loginLabel" aria-hidden="true"
+     data-backdrop="false">
+    <div class="modal-dialog" style="width:400px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="loginLabel">
+                    Login
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-group" action="">
+                    <div class="form-group">
+                        <label for="">Username</label>
+                        <input id="loginUsername" class="form-control" type="text" placeholder="6-15位字母或数字">
+                    </div>
+                    <div class="form-group">
+                        <label for="">Password</label>
+                        <input id="loginPassword" class="form-control" type="password" placeholder="至少6位字母或数字">
+                    </div>
+                    <div class="text-right">
+                        <button id="loginSubmit" class="btn btn-primary modal-submit" type="submit">登陆</button>
+                        <button class="btn btn-default" data-dismiss="modal">取消</button>
+                    </div>
+                    <a id="jump2register" href="" data-toggle="modal" data-dismiss="modal" data-target="#register_modal">没有账号？点我注册</a>
+                </form>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
 
-<script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-<script src="http://d3js.org/d3.v5.min.js" type="text/javascript"></script>
-<script type="text/javascript">
-    $(function () {
-        function showMovie(title) {
-            $.get("/movies/search/findByTitle?title=" + encodeURIComponent(title), // todo fix paramter in SDN
-                    function (data) {
-                        if (!data) return;
-                        var movie = data;
-                        $("#title").text(movie.title);
-                        $("#poster").attr("src","http://neo4j-contrib.github.io/developer-resources/language-guides/assets/posters/"+encodeURIComponent(movie.title)+".jpg");
-                        var $list = $("#crew").empty();
-                        movie.roles.forEach(function (cast) {
-                            $.get(cast._links.person.href, function(personData) {
-                                var person = personData.name;
-                                var job = cast.job || "acted";
-                                $list.append($("<li>" + person + " " +job + (job == "acted"?" as " + cast.roles.join(", ") : "") + "</li>"));
-                            });
-                        });
-                    }, "json");
-            return false;
-        }
-        function search() {
-            var query=$("#search").find("input[name=search]").val();
-            $.get("/movies/search/findByTitleLike?title=*" + encodeURIComponent(query) + "*",
-                    function (data) {
-                        var t = $("table#results tbody").empty();
-                        if (!data) return;
-                        data = data["_embedded"].movies;
-                        data.forEach(function (movie) {
-                            $("<tr><td class='movie'>" + movie.title + "</td><td>" + movie.released + "</td><td>" + movie.tagline + "</td></tr>").appendTo(t)
-                                    .click(function() { showMovie($(this).find("td.movie").text());})
-                        });
-                        showMovie(data[0].title);
-                    }, "json");
-            return false;
-        }
-
-        $("#search").submit(search);
-        search();
-    })
-</script>
-
-<script type="text/javascript">
-    var width = 800, height = 800;
-
-    var force = d3.layout.force()
-            .charge(-200).linkDistance(30).size([width, height]);
-
-    var svg = d3.select("#graph").append("svg")
-            .attr("width", "100%").attr("height", "100%")
-            .attr("pointer-events", "all");
-
-
-    d3.json("/graph", function(error, graph) {
-        if (error) return;
-
-        force.nodes(graph.nodes).links(graph.links).start();
-
-        var link = svg.selectAll(".link")
-                .data(graph.links).enter()
-                .append("line").attr("class", "link");
-
-        var node = svg.selectAll(".node")
-                .data(graph.nodes).enter()
-                .append("circle")
-                .attr("class", function (d) { return "node "+d.label })
-                .attr("r", 10)
-                .call(force.drag);
-
-        // html title attribute
-        node.append("title")
-                .text(function (d) { return d.title; })
-
-        // force feed algo ticks
-        force.on("tick", function() {
-            link.attr("x1", function(d) { return d.source.x; })
-                    .attr("y1", function(d) { return d.source.y; })
-                    .attr("x2", function(d) { return d.target.x; })
-                    .attr("y2", function(d) { return d.target.y; });
-
-            node.attr("cx", function(d) { return d.x; })
-                    .attr("cy", function(d) { return d.y; });
-        });
-    });
-</script>
 </body>
+
+<script src="assets/js/jquery-1.10.2.js" type="text/javascript"></script>
+<script src="assets/js/jquery-ui-1.10.4.custom.min.js" type="text/javascript"></script>
+<script src="lib/js/bootstrap.js" type="text/javascript"></script>
+<script src="lib/js/bootstrap-table.js" type="text/javascript"></script>
+<script src="lib/js/bootstrap-table-zh-CN.js" type="text/javascript"></script>
+<script src="assets/js/validator.js" type="text/javascript"></script>
+<script src="assets/js/index.js" type="text/javascript"></script>
+
 </html>

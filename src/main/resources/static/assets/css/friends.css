@@ -1,0 +1,47 @@
+.friends-list {
+    border-bottom: 1px solid #dcdcdc;
+    float: right;
+}
+
+.d-table-cell {
+    display: table-cell;
+}
+
+.row .col-md-10 {
+    padding: 18px 0px;
+}
+
+.icon {
+    float: left;
+    border-radius: 3px;
+    /*display: inline-block;*/
+    /*line-height: 1;*/
+    /*vertical-align: middle;*/
+}
+
+.friends-name {
+    font-size: 20px;
+    margin-bottom: 7px;
+}
+
+.friends-tag {
+    color : #586069;
+    margin-bottom: 8px;
+}
+
+.address-icon {
+    height: 14px;
+    width: 14px;
+    display: inline;
+    line-height: 1;
+    overflow: hidden;
+    vertical-align: middle;
+}
+
+.friends-address {
+    display: inline;
+}
+
+.item {
+    display: block;
+}

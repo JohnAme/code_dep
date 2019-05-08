@@ -1,0 +1,115 @@
+code, kbd, pre, samp, code * {
+    font-family: Menlo, Monaco, Consolas, 'Courier New', monospace !important
+}
+
+.light {
+    font-weight: 200
+}
+
+.semilight {
+    font-weight: 300
+}
+
+.normal, .regular {
+    font-weight: 400
+}
+
+.semibold {
+    font-weight: 600
+}
+
+body {
+    font-weight: 400;
+    color: #444;
+    text-rendering: optimizeLegibility
+}
+
+.wrap-together {
+    display: inline-block
+}
+
+.visible {
+    visibility: visible;
+}
+
+button, .link-button {
+    font-family: "Segoe UI", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+    font-weight: 600;
+    font-size: 20px;
+    padding: 15px 35px;
+    display: inline-block;
+    color: inherit;
+    cursor: pointer
+}
+
+.link-button:hover {
+    text-decoration: none;
+    color: inherit
+}
+
+.dlink {
+    cursor: pointer
+}
+
+.main-container {
+    min-height: 100%;
+    position: relative
+}
+
+.body-content {
+    padding-top: 25px;
+    padding-bottom: 40px
+}
+
+.row.display-flex {
+    display: flex;
+    flex-wrap: wrap
+}
+
+.row.display-flex > [class*='col-'] {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1
+}
+
+.swimlane {
+    padding: 6rem 0 6rem;
+    min-height: 30rem;
+    position: relative;
+    align-items: center;
+    border-top:1px solid #563d7c;
+}
+
+/*.swimlane:nth-child(odd) {*/
+    /*background-color: #f5f5f5*/
+/*}*/
+
+/*.container:nth-child(odd){*/
+    /*background-color: #f5f5f5*/
+/*}*/
+
+.swimlane:nth-child(even) {
+    background-color: initial
+}
+
+.navbar-fixed-container {
+    background-color: #373277;
+    height: 50px
+}
+
+body {
+    margin-bottom: 135px
+}
+
+strong, b {
+    font-weight: 600
+}
+
+#main p {
+    width: 80%;
+    margin-top: 20px;
+    font-size: 18px;
+    font-family: sans-serif;
+    line-height: 40px;
+    max-width: 100%;
+}
