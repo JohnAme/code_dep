@@ -105,7 +105,7 @@ $(function(){
         onDblClickRow: function (row, $element, field) {
             var modal = $("#verify");
             modal.modal();
-            modal.find('.modal-body label').innerText = row.class;
+            $("#verifyClass").html("class : " + row.class);
         }
     });
 });
@@ -159,22 +159,23 @@ $(function () {
 });
 
 function submitVerify() {
-
+    $('#sth').bootstrapTable('updateRow', {index: 2, row: {"class":"kaixin","score":"0.sdd444","isVerified":"gdfs","effect":"123"}});
+    $("#verify").modal("hide");
 }
 
-$('#verify').on('show.bs.modal', function (event) {
-    var button = $(event.relatedTarget); // Button that triggered the modal
-    //注意这里的whatever对应前面html代码中button标签下data-whatever属性的后半段
-    var recipient = button.data('whatever') // Extract info from data-* attributes
-    // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-    // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-    var modal = $(this);
-    console.log(typeof button);
-    //此处即为修改modal的标题
-    // modal.find('.modal-title').text('New message to ');
-    // modal.find('.modal-body label').innerText("edit");
-    // modal.find('.modal-body input').val(recipient);
-});
+// $('#verify').on('show.bs.modal', function (event) {
+//     var button = $(event.relatedTarget); // Button that triggered the modal
+//     //注意这里的whatever对应前面html代码中button标签下data-whatever属性的后半段
+//     var recipient = button.data('whatever') // Extract info from data-* attributes
+//     // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+//     // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+//     var modal = $(this);
+//     console.log(typeof button);
+//     //此处即为修改modal的标题
+//     // modal.find('.modal-title').text('New message to ');
+//     // modal.find('.modal-body label').innerText("edit");
+//     // modal.find('.modal-body input').val(recipient);
+// });
 
 function setCookie(cname,cvalue,exdays){
     var d = new Date();

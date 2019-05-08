@@ -2,64 +2,112 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Bootstrap 实例 - 模态框（Modal）插件</title>
+    <title>Bootstrap 实例 - 默认的导航栏</title>
     <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
     <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
 
-<h2>创建模态框（Modal）</h2>
-<!-- 按钮触发模态框 -->
-<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
-    开始演示模态框
-</button>
-<!-- 模态框（Modal） -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
-    <div class="modal-dialog" style="width:400px">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                    &times;
-                </button>
-                <h4 class="modal-title" id="myModalLabel">
-                    Register
-                </h4>
-            </div>
-            <div class="modal-body">
-                <form class="form-group" action="">
-                    <div class="form-group">
-                        <label for="">Username</label>
-                        <input class="form-control" type="text" placeholder="6-15位字母或数字">
-                    </div>
-                    <div class="form-group">
-                        <label for="">Password</label>
-                        <input class="form-control" type="password" placeholder="至少6位字母或数字">
-                    </div>
-                    <div class="form-group">
-                        <label for="">Password Again</label>
-                        <input class="form-control" type="password" placeholder="至少6位字母或数字">
-                    </div>
-                    <div class="form-group">
-                        <label for="">mail</label>
-                        <input class="form-control" type="email" placeholder="例如:123@123.com">
-                    </div>
-                    <div class="text-right">
-                        <button class="btn btn-primary modal-submit" type="submit">提交</button>
-                        <button class="btn btn-danger" data-dismiss="modal">取消</button>
-                    </div>
-                    <a href="" data-toggle="modal" data-dismiss="modal" data-target="#login">已有账号？点我登录</a>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">关闭
-                </button>
-                <button type="button" class="btn btn-primary">
-                    提交更改
-                </button>
-            </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal -->
+<form class="form-horizontal" role="form">
+    <div class="form-group">
+        <label for="calendar" class="col-sm-1 control-label">日期</label>
+        <div class="col-sm-3">
+            <input type="text" id="calendar" class="form-control" value="2018-06-13" class="form-control">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="types" class="col-sm-1 control-label">时间类别</label>
+        <div class="col-sm-3">
+            <select name="" id="types" class="form-control">
+                <option value="week">week</option>
+                <option value="month">month</option>
+                <option value="sixmonth">sixmonth</option>
+            </select>
+        </div>
+    </div>
+</form>
+<div class="tableDisplay" id="dataTable">
+    <table class="table table-bordered" width="100%" style="margin-bottom:0px;" data-height="460">
+    </table>
 </div>
+
 </body>
+<script>
+    //日期时间格式化20180613
+    function dateFormat(time){
+        //time = 2018-06-13;
+        var splitArr = time.split('-'),
+            newStr = splitArr.join('');
+        return newStr;
+    }
+    $(document).ready(function() {
+        //启动日期插件
+        $('#calendar').datetimepicker({
+            language:  'zh-CN',
+            weekStart: 1,
+            todayBtn:  1,
+            autoclose: 1,
+            todayHighlight: 1,
+            startView: 2,
+            minView: 2,
+            forceParse: 0
+        });
+        //日期改变时刷新table;
+        $('#calendar').on('changeDate', function(ev){
+            $dataTableHot.bootstrapTable('refresh');
+        });
+
+        var type=$("#types option:selected").val();
+        $("#types").change(function(){
+            type = $("#types option:selected").val();
+            $dataTableHot.bootstrapTable('refresh');
+        })
+        var $dataTableHot = $("#dataTable table").bootstrapTable({
+            search: false,
+            pagination: true,
+            pageSize: 15,
+            pageList: [5, 10, 15, 20],
+            showColumns: true,
+            showRefresh: false,
+            locale: "zh-CN",
+            striped: true,
+            toggle:true,
+            ajax:function(request) {
+                $.ajax({
+                    url:"http://127.0.0.1:8080/getdata",
+                    type:"GET",
+                    dataType:"json",
+                    data:{
+                        date:dateFormat($("#calendar").val()),    //dateFormat($("#calendar").val())
+                        type:type,
+                        value:"hot",
+                        order:"asc"
+                    },
+                    success:function(data){
+                        request.success({
+                            row : data
+                        });
+                        $('#dataTable table').bootstrapTable('load', data);
+                    },
+                    error:function(error){
+                        console.log(error);
+                    }
+                })
+            },
+            columns:[{
+                field: "projectId",
+                title:"projectId"
+            },{
+                field: "projectName",
+                title:"projectName"
+            }, {
+                field: "value",
+                title:"value"
+            }]
+        });
+
+    });
+
+</script>
 </html>

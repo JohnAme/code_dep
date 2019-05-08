@@ -9,5 +9,8 @@
         <module name="code_dep" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="code_dep" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
