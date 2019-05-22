@@ -9,7 +9,7 @@ public class Project implements Serializable {
     private long pid;
     private String pname;
     private long ownerId;
-    private List<MyClass> code;
+    private List<SqlClass> code;
     private List<UCase> document;
 
     public long getPid() {
@@ -32,9 +32,9 @@ public class Project implements Serializable {
 
     public long getOwnerId(){return ownerId;}
 
-    public List<MyClass> getCode(){ return code; }
+    public List<SqlClass> getCode(){ return code; }
 
-    public void setCode(List<MyClass> code){this.code=code;}
+    public void setCode(List<SqlClass> code){this.code=code;}
 
     public List<UCase> getDocument(){return document;}
 

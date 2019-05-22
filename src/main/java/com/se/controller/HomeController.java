@@ -1,11 +1,8 @@
-package com.se.Controller;
+package com.se.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.servlet.http.HttpServletRequest;
 
 @Controller()
 @RequestMapping(value="/")
@@ -28,8 +25,15 @@ public class HomeController {
     public String friends(){
         return "friends";
     }
+    @RequestMapping("/movie_graph")
+    public String graph(){
+        return "graph";
+    }
 
-
+    @RequestMapping("/CDCGraph")
+    public String toCDCGraph(){
+        return "graph";
+    }
 
 
 }

@@ -1,7 +1,7 @@
 package com.se.service.impl;
 
 import com.se.dal.ProjectRepository;
-import com.se.entity.MyClass;
+import com.se.entity.SqlClass;
 import com.se.service.ProjectManageService;
 import com.se.util.CandidateEntry;
 import com.se.util.TempUcUtil;
@@ -9,9 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class ProjectManageServiceImp implements ProjectManageService {
@@ -35,7 +33,7 @@ public class ProjectManageServiceImp implements ProjectManageService {
     }
 
     @Override
-    public List<MyClass> getCode(long pid) {
+    public List<SqlClass> getCode(long pid) {
         return projectRepository.findCodeByPId(pid);
     }
 
