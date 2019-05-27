@@ -2,25 +2,19 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="http://neo4j-contrib.github.io/developer-resources/language-guides/assets/css/main.css">
-    <title>Neo4j Graph</title>
+    <link rel="shortcut icon" href="#">
+    <title>CDCGraph</title>
 </head>
 
 <body>
-<div id="graph">
-</div>
+
 <div role="navigation" class="navbar navbar-default navbar-static-top">
     <div class="container">
         <div class="row">
             <div class="col-sm-6 col-md-6">
                 <ul class="nav navbar-nav">
                     <li>
-                        <!--
-                        <form role="search" class="navbar-form" id="search">
-                            <div class="form-group">
-                                <input type="text" value="Green" placeholder="" class="form-control" name="search">
-                            </div>
-                            <button class="btn btn-default" type="submit">Search</button>
-                        </form>-->
+
                     </li>
                 </ul>
             </div>
@@ -31,105 +25,243 @@
                     </a>
                 </div>
                 <div class="navbar-brand">
-                    <div class="brand">Neo4j Graph</div>
+                    <div class="brand">Code Dependency Graph</div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row">
-    <!--
-    <div class="col-md-7">
-        <div class="panel panel-default">
-            <div class="panel-heading">Search Results</div>
-            <table id="results" class="table table-striped table-hover">
-                <thead>
-                <tr>
-                    <th>Movie</th>
-                    <th>Released</th>
-                    <th>Tag</th>
-                </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
+<main>
+    <div class="row">
+        <div class="col-sm-1" style="width: 100%" id="graph" ></div>
     </div>
-    -->
-    <!--
-    <div class="col-md-7">
-        <div class="panel panel-default">
-            <div class="panel-heading" id="title">Details</div>
-            <div class="row">
-                <div class="col-sm-4 col-md-4">
-                    <img src="" class="well" id="poster"/>
-                </div>
-                <div class="col-md-8 col-sm-8">
-                    <h4>Description</h4>
-                    <ul id="crew">
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-    -->
+
+</main>
+
 </div>
+
 <style type="text/css">
-    .node { stroke: #222; stroke-width: 1.5px; }
-    .node.actor { fill: #2b669a; }
-    .node.movie { fill: #8cc051; }
-    .link { stroke: #9ecae1; stroke-opacity: .6; stroke-width: 2px;stroke-dasharray: 10,2;}
 
+    .node { fill:#1B9AF7 ; stroke-width: 0px; }
 
+    .link {
+        fill:none;
+        stroke: #666;
+        stroke-width: 1.5px;
+    }
+    .link.dataCD{
+        stroke-dasharray: 2px;
+    }
+    text {
+        font: 12px sans-serif;
+        pointer-events: none;
+        text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+        length:10;
+    }
+    #arrow{
+        fill: #666;
+
+    }
 </style>
 
 <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-<script src="http://d3js.org/d3.v3.min.js" type="text/javascript"></script>
-
+<script src="https://d3js.org/d3.v5.min.js"></script>
 
 <script type="text/javascript">
-    var width = 800, height = 800;
+    var width = 1400, height = 700;
 
-    var force = d3.layout.force()
-            .charge(-200).linkDistance(30).size([width, height]);
+    var simulation=d3.forceSimulation()
+        .force("link",d3.forceLink().id(d=>d.index).distance(150))
+        .force("charge",d3.forceManyBody().strength(-1000).distanceMax(300))
+        // .force("center",d3.forceCenter(width/2,height/2))
+        .force("x",d3.forceX(width/2))
+        .force("y",d3.forceY(height/2))
+        .force("collide",d3.forceCollide(30));
 
     var svg = d3.select("#graph").append("svg")
-            .attr("width", "100%").attr("height", "100%")
-            .attr("pointer-events", "all");
+        .attr("width", width).attr("height", height);
+
+    d3.json("/trace/CDCGraph/javacg").then(function(graph) {
+        var links=graph.links;
+        links.sort(function (a,b) {
+            if (a.source > b.source) {return 1;}
+            else if (a.source < b.source) {return -1;}
+            else {
+                if (a.target > b.target) {return 1;}
+                if (a.target < b.target) {return -1;}
+                else {return 0;}
+            }
+        })
+        var array=Array(graph.nodes.length).fill(0).map(x=>Array(graph.nodes.length).fill(0));
+        for (var i=0; i<links.length; i++) {
+            if(links[i].source<links[i].target){
+                array[links[i].source][links[i].target]++;
+                links[i].num=array[links[i].source][links[i].target];
+            }else if(links[i].source>links[i].target){
+                array[links[i].target][links[i].source]++;
+                links[i].num=array[links[i].target][links[i].source];
+            }
+        };
+
+        svg.append("defs")
+            .append("marker")
+            .attr("viewBox","0 0 30 30")
+            .attr("id", "arrow")
+            .attr("markerWidth", 20)
+            .attr("markerHeight", 25)
+            .attr("refX",15)
+            .attr("refY",5)
+            .attr("orient", "auto-start-reverse")
+            .append("path")
+            .attr("d", "M0,0 L10,5L0,10z");
+
+        var path = svg.append("g").selectAll("path")
+            .data(links)
+            .enter().append("path")
+            .attr("class", function(d) { return "link " + d.type; })
+            .attr("marker-end",function(d) {
+                if(d.type=="directCD"){
+                    return "url(#arrow)"
+                }
+                return "url(#emptyArrow)"; })
+            ;
+        path.append("title").text(function(d){
+            var f=d3.format(".4f");
+            return d.type+": "+f(d.closeness);})
+
+        var node = svg.append("g").selectAll(".node")
+            .data(graph.nodes).enter()
+            .append("circle")
+            .attr("class", "node")
+            .attr("r", 6)
+            .call(d3.drag()
+                .on("start",dragstarted)
+                .on("drag",dragged)
+                .on("end",dragended));
+
+        node.append("title").text(d=>d.name);
+
+        var text = svg.append("g").selectAll("text")
+            .data(graph.nodes)
+            .enter().append("text")
+            .attr("x", 12)
+            .attr("y", ".31em")
+            .text(function(d) {
+                if(d.title.length>10){
+                    return d.title.substring(0,10)+"..."
+                }
+                return d.title; });
+
+        var zoom = d3.zoom()
+            .scaleExtent([0.3, 8])
+
+            .on("zoom", zoomed);
+
+        svg.call(zoom);
 
 
-    d3.json("/trace/graph", function(error, graph) {
-        if (error) return;
+        simulation.nodes(graph.nodes)
+            .on("tick",ticked);
+        simulation.force("link").links(graph.links);
 
-        force.nodes(graph.nodes).links(graph.links).start();
+        // const view=[]
+        // const transition = svg.transition()
+        //     .tween("zoom", d => {
+        //         const i = d3.interpolateZoom(view, [d3.mounse.x, d3.mounse.y, d3.mounse.r * 2]);
+        //         return t => zoomTo(i(t));
+        //     });
 
-        var link = svg.selectAll(".link")
-                .data(graph.links).enter()
-                .append("line").attr("class", "link");
+        function zoomed(){
+            svg.attr(
+                'transform', 'translate(' + d3.event.transform.x + ','+d3.event.transform.y+')' +
+                ' scale(' + d3.event.transform.k + ')');
+        }
 
-        var node = svg.selectAll(".node")
-                .data(graph.nodes).enter()
-                .append("circle")
-                .attr("class", function (d) { return "node "+d.label })
-                .attr("r", 10)
-                .call(force.drag);
-
-        // html title attribute
-        node.append("title")
-                .text(function (d) { return d.title; })
-
-        // force feed algo ticks
-        force.on("tick", function() {
-            link.attr("x1", function(d) { return d.source.x; })
-                    .attr("y1", function(d) { return d.source.y; })
-                    .attr("x2", function(d) { return d.target.x; })
-                    .attr("y2", function(d) { return d.target.y; });
+        function ticked() {
+            path.attr("d", pathTransition);
 
             node.attr("cx", function(d) { return d.x; })
-                    .attr("cy", function(d) { return d.y; });
-        });
+                .attr("cy", function(d) { return d.y; });
+            text.attr("transform",function(d){
+                return "translate(" + d.x + "," + d.y + ")";
+            })
+        }
+
+        function pathTransition(d){
+            const dx = d.target.x - d.source.x;
+            const dy = d.target.y - d.source.y;
+            const num=d.num;
+            if(1==num&&
+                Math.max(array[graph.nodes.indexOf(d.source)][graph.nodes.indexOf(d.target)],
+                    array[graph.nodes.indexOf(d.target)][graph.nodes.indexOf(d.source)])%2!=0){
+                return "M" + d.source.x + "," + d.source.y +" L"+d.target.x+","+d.target.y+"";
+            }
+            var arc=num/2;
+            var direction=num%2;
+            var a=Math.abs(d.source.x-d.target.x)*0.2;
+            var b=Math.abs(d.source.y-d.target.y)*0.2;
+            var mx=(d.source.x+d.target.x)/2.0;
+            var my=(d.source.y+d.target.y)/2.0;
+            if(0==direction){
+                if(0==a){
+                    var xa=d.source.x-a;
+                    var xy=my;
+                    return "M" + d.source.x + "," + d.source.y +" L"+xa+","+xy+" "+d.target.x+","+d.target.y;
+                }
+                if((d.source.x-d.target.x)*(d.source.y-d.target.y)>=0){
+                    var xa=mx-b/2.0;
+                    var xy=my+a/2.0;
+                    return "M" + d.source.x + "," + d.source.y +" L"+xa+","+xy+" "+d.target.x+","+d.target.y;
+                }else {
+                    var xa=mx+b/2.0;
+                    var xy=my+a/2.0;
+                    return "M" + d.source.x + "," + d.source.y +" L"+xa+","+xy+" "+d.target.x+","+d.target.y;
+                }
+            }else{
+                if(0==a){
+                    var xa=d.source.x+a;
+                    var xy=my;
+                    return "M" + d.source.x + "," + d.source.y +" L"+xa+","+xy+" "+d.target.x+","+d.target.y;
+                }
+                if((d.source.x-d.target.x)*(d.source.y-d.target.y)>=0){
+                    var xa=mx+b/2.0;
+                    var xy=my-a/2.0;
+                    return "M" + d.source.x + "," + d.source.y +" L"+xa+","+xy+" "+d.target.x+","+d.target.y;
+                }else {
+                    var xa=mx-b/2.0;
+                    var xy=my-a/2.0;
+                    return "M" + d.source.x + "," + d.source.y +" L"+xa+","+xy+" "+d.target.x+","+d.target.y;
+                }
+            }
+            return "M" + d.source.x + "," + d.source.y +" L"+d.target.x+","+d.target.y+"";
+        }
+
+
     });
+    function dragstarted(d) {
+        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+    }
+
+    function dragged(d) {
+        d.fx = d3.event.x;
+        d.fy = d3.event.y;
+    }
+
+    function dragended(d) {
+        if (!d3.event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+    }
+
+
+
+
+
+
+
 </script>
 </body>
 </html>

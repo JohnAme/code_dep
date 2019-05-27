@@ -7,7 +7,7 @@
         <result property="pname" column="pname"/>
         <result property="ownerId" column="owner_id"/>
     </resultMap>
-    <resultMap id="classRM" type="MyClass">
+    <resultMap id="classRM" type="SqlClass">
         <id property="classId" column="class_id"/>
         <result property="pid" column="pid"/>
         <result property="path" column="path"/>

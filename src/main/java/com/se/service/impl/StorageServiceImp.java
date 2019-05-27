@@ -2,7 +2,9 @@ package com.se.service.impl;
 
 import com.se.config.StorageProperties;
 import com.se.exception.StorageException;
+import com.se.service.CaptureCDService;
 import com.se.service.FileStorageService;
+import com.se.service.GraphService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -15,16 +17,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.jar.JarFile;
 import java.util.stream.Stream;
 
 @Service
 public class StorageServiceImp implements FileStorageService {
     private final Path rootLocation;
-
+    private final CaptureCDService captureCDService;
     @Autowired
-    public StorageServiceImp(StorageProperties storageProperties){
+    public StorageServiceImp(StorageProperties storageProperties,CaptureCDService captureCDService){
         rootLocation= Paths.get(storageProperties.getLocation());
+        this.captureCDService=captureCDService;
     }
+
     @Override
     public void init() {
         try {
@@ -37,6 +42,7 @@ public class StorageServiceImp implements FileStorageService {
     @Override
     public void store(MultipartFile file) {
         String filename = StringUtils.cleanPath(file.getOriginalFilename());
+        System.out.println(filename);
         try {
             if (file.isEmpty()) {
                 throw new StorageException("Failed to store empty file " + filename);
@@ -51,6 +57,7 @@ public class StorageServiceImp implements FileStorageService {
                 Files.copy(inputStream, this.rootLocation.resolve(filename),
                         StandardCopyOption.REPLACE_EXISTING);
             }
+            captureCDService.getCDFromJarFile(this.rootLocation.resolve(filename).toString());
         }
         catch (IOException e) {
             throw new StorageException("Failed to store file " + filename, e);

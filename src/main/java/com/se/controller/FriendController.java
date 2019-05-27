@@ -1,4 +1,4 @@
-package com.se.Controller;
+package com.se.controller;
 
 import com.se.entity.User;
 import com.se.service.UserService;

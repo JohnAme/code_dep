@@ -1,7 +1,7 @@
-package com.se.Controller;
+package com.se.controller;
 
 
-import com.se.entity.MyClass;
+import com.se.entity.SqlClass;
 import com.se.service.ProjectManageService;
 import com.se.util.CandidateEntry;
 
@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -61,17 +60,17 @@ public class StartController {
     @ResponseBody
     public ResponseEntity<?> projectDir(@RequestParam(value = "pid",required = true)long pid,
                                         @RequestParam(value="pname",required = true)String pname){
-        List<MyClass> code=projectManageService.getCode(pid);
+        List<SqlClass> code=projectManageService.getCode(pid);
         List<Path> pathList=new ArrayList<>();
 
-        for(MyClass myClass:code){
-            String path=String.format("%s\\%s",myClass.getPath(),myClass.getClassName());
-//            System.out.format("path:%s%s\n",pname,path);
+        for(SqlClass sqlClass:code){
+            String path=String.format("%s\\%s",sqlClass.getPath(),sqlClass.getClassName());
             pathList.add(Paths.get(path));
         }
         TreeViewUtil root=new TreeViewUtil(pname);
         root.build(pathList);
         return new ResponseEntity<TreeViewUtil>(root,HttpStatus.OK);
+
     }
 
     @GetMapping("/uc")

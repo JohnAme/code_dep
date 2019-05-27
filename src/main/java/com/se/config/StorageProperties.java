@@ -8,7 +8,7 @@ public class StorageProperties {
     /**
      * Folder location for storing files
      */
-    private String location = "D:\\repository\\store";
+    private String location = "D:\\repository\\code_dep\\src\\main\\resources\\project";
 
     public String getLocation() {
         return location;
