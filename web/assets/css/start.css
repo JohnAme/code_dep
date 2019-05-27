@@ -12,3 +12,36 @@
     -ms-filter: 'alpha(opacity=0)';
     font-size: 200px;
 }
+
+.relevant-color{
+    background-color: #65e849 !important;
+}
+
+.irrelevant-color{
+    background-color: #e66c6c !important;
+}
+
+#sth {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    height: 200px;
+    overflow: scroll;
+}
+
+#table2 {
+    height: 300px;
+    overflow: scroll;
+}
+
+.blank {
+    margin: 20px 0;
+}
+
+.t2 {
+    overflow: scroll;
+    max-height: 300px;
+}
+
+.radio-inline {
+    display: inline;
+}

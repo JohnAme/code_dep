@@ -1,3 +1,6 @@
+var curRow = 0;
+var curRowIndex = 1;
+
 var line1 = $('#tr1');
 line1.on('click',function () {
     $(this).css('background-color','red');
@@ -10,12 +13,15 @@ line2.on('click',function () {
 });
 
 var json = [
-    {"class":"EditHealth","score":"0.5555555555","isVerified":"353353535353535","effect":""},
-    {"class":"EditHealth","score":"0.2222222222","isVerified":"","effect":""},
-    {"class":"EditHealth","score":"0.1111111111","isVerified":"","effect":""},
-    {"class":"EditHealth","score":"0.3333333333","isVerified":"","effect":""},
-    {"class":"EditHealth","score":"0.6666666666","isVerified":"","effect":""},
-    {"class":"EditHealth","score":"0.4444444444","isVerified":"","effect":""}
+    {"class":"FileController","score":"0.150265486","isVerified":"","effect":""},
+    {"class":"ManageService","score":"0.211244230","isVerified":"","effect":""},
+    {"class":"LoginServlet","score":"0.588179880","isVerified":"","effect":""},
+    {"class":"EditHealth","score":"0.648066566","isVerified":"","effect":""},
+    {"class":"StorageService","score":"0.314593012","isVerified":"Irrelevant","effect":""},
+    {"class":"TempUcUtil","score":"0.477558188","isVerified":"","effect":""},
+    {"class":"StartController","score":"0.478028838","isVerified":"","effect":""},
+    {"class":"Application","score":"0.681305107","isVerified":"Relevant","effect":""},
+
     ];
 
 var recentProjects = [
@@ -83,31 +89,6 @@ $(function(){
         })
     });
 
-    /*初始化table数据*/
-    $("#sth").bootstrapTable({
-        columns: [{
-            field: "class",
-            title: 'class',
-        }, {
-            field: 'score',
-            title: 'score'
-        }, {
-            field: 'effect',
-            title: 'effect'
-        },{
-            field: 'isVerified',
-            title: 'isVerified',
-            align: 'center',
-            events: window.operateEvents,
-            formatter: operateFormatter
-        }],
-        data: json,
-        onDblClickRow: function (row, $element, field) {
-            var modal = $("#verify");
-            modal.modal();
-            $("#verifyClass").html("class : " + row.class);
-        }
-    });
 });
 
 // $("#login_modal").on('hidden.bs.modal',function(){
@@ -120,29 +101,79 @@ $(function(){
 //     $("#test").hide();
 // });
 
-
-function operateFormatter(value, row, index) {
-    return [
-        '<a class="like" href="javascript:void(0)" title="Like">',
-        '<i class="glyphicon glyphicon-heart"></i>',
-        '</a>',
-        '<a class="remove" href="javascript:void(0)" title="Remove">',
-        '<i class="glyphicon glyphicon-remove"></i>',
-        '</a>'
-    ].join('')
-}
-
-
-window.operateEvents = {
-    'click .like': function (e, value, row, index) {
-        // alert('You click like action, row: ' + JSON.stringify(row));
-        // $("tr[data-index=sindex]").css('background-color','green');
-        $("#sth tr:eq(" + (index+1) +")").css('background-color','#65e849');
+/*初始化table数据*/
+$("#sth").bootstrapTable({
+    columns: [{
+        field: "class",
+        title: 'class',
+    }, {
+        field: 'score',
+        title: 'score'
+    }, {
+        field: 'effect',
+        title: 'effect'
+    },{
+        field: 'isVerified',
+        title: 'isVerified',
+        align: 'center',
+        // events: window.operateEvents,
+        // formatter: operateFormatter
+    }],
+    data: json,
+    sortable: true,
+    sortOrder: "desc",
+    sortName: 'isVerified',
+    sortName: 'score',//排序字段
+    rowStyle: function (row, index) {
+        //这里有5个取值代表5中颜色['active', 'success', 'info', 'warning', 'danger'];
+        var strclass = "";
+        if (row.isVerified == "Relevant") {
+            strclass = 'success';//还有一个active
+        }
+        else if (row.isVerified == "Irrelevant") {
+            strclass = 'danger';
+        }
+        else {
+            return {};
+        }
+        return { classes: strclass }
     },
-    'click .remove': function (e, value, row, index) {
-        $("#sth tr:eq(" + (index+1) +")").css('background-color','#e66c6c');
-    }
-};
+    onDblClickRow: function (row, element, field) {
+        var modal = $("#verify");
+        modal.modal();
+        $("#verifyClass").html("class : " + row.class);
+        curRow = row;
+        curRowIndex = element.data('index');
+    },
+
+    // onClickRow: function (row,$element,field) {
+    //     $($element).css('background-color','#65e849');
+    // }
+});
+
+// function operateFormatter(value, row, index) {
+//     return [
+//         '<a class="like" href="javascript:void(0)" title="Like">',
+//         '<i class="glyphicon glyphicon-heart"></i>',
+//         '</a>',
+//         '<a class="remove" href="javascript:void(0)" title="Remove">',
+//         '<i class="glyphicon glyphicon-remove"></i>',
+//         '</a>'
+//     ].join('')
+// }
+//
+//
+// window.operateEvents = {
+//     'click .like': function (e, value, row, index) {
+//         // alert('You click like action, row: ' + JSON.stringify(row));
+//         // $("tr[data-index=sindex]").css('background-color','green');
+//         $("#sth tr:eq(" + (index+1) +")").css('background-color','#65e849');
+//         // $("#sth tr:eq(" + (index+1) +")").addClass("relevant-color");
+//     },
+//     'click .remove': function (e, value, row, index) {
+//         $("#sth tr:eq(" + (index+1) +")").css('background-color','#e66c6c');
+//     }
+// };
 
 /*
 *
@@ -158,10 +189,27 @@ $(function () {
     var result = validator.validate_max();
 });
 
+
 function submitVerify() {
-    $('#sth').bootstrapTable('updateRow', {index: 2, row: {"class":"kaixin","score":"0.sdd444","isVerified":"gdfs","effect":"123"}});
+    var scan = $("input[name='radioVerify']:checked").val();
+    var lineIndex = curRowIndex +1 ;
+    if(scan == "Relevant"){
+        // $("#sth tr:eq("+lineIndex+")").css('background-color','#65e849');
+        $("#sth tr:eq(" + lineIndex +")").removeClass("irrelevant-color");
+        $("#sth tr:eq(" + lineIndex +")").addClass("relevant-color");
+    }else if(scan == "Irrelevant"){
+        // $("#sth tr:eq(" + (index+1) +")").addClass("irrelevant-color");
+        // $("#sth tr:eq(" + lineIndex +")").css('background-color','#e66c6c');
+        $("#sth tr:eq(" + lineIndex +")").removeClass("relevant-color");
+        $("#sth tr:eq(" + lineIndex +")").addClass("irrelevant-color");
+    }
+    // $('#sth').bootstrapTable('updateRow', {index: 2, row: {"class":"kaixin","score":"0.sdd444","isVerified":"gdfs","effect":"123"}});
     $("#verify").modal("hide");
 }
+
+$('#verify').on('hide.bs.modal', function () {
+    // alert(curRow.score);
+});
 
 // $('#verify').on('show.bs.modal', function (event) {
 //     var button = $(event.relatedTarget); // Button that triggered the modal
@@ -202,7 +250,7 @@ function checkCookie(){
         $("#nav_user").css("display","block");
     }
     else {
-        alert("没有cookie");
+        // alert("没有cookie");
         // user = prompt("请输入你的名字:","");
         // if (user!="" && user!=null){
         //     setCookie("username",user,30);

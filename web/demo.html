@@ -1,113 +1,85 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>Bootstrap 实例 - 默认的导航栏</title>
-    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
-    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Requirements' Traceable Query Tool</title>
+
+    <link href="lib/css/bootstrap.css" rel="stylesheet"/>
+    <link href="lib/css/bootstrap-table.css" rel="stylesheet"/>
+    <link href="assets/css/docs.css" rel="stylesheet"/>
+    <link href="assets/css/index.css" rel="stylesheet"/>
+    <link href="assets/css/product.css" rel="stylesheet"/>
+    <link href="assets/css/grid-framework.less" rel="stylesheet/less" type="text/css"/>
+    <link href="lib/css/bootstrap-treeview.min.css" rel="stylesheet">
 </head>
 <body>
-
-<form class="form-horizontal" role="form">
-    <div class="form-group">
-        <label for="calendar" class="col-sm-1 control-label">日期</label>
-        <div class="col-sm-3">
-            <input type="text" id="calendar" class="form-control" value="2018-06-13" class="form-control">
-        </div>
-    </div>
-    <div class="form-group">
-        <label for="types" class="col-sm-1 control-label">时间类别</label>
-        <div class="col-sm-3">
-            <select name="" id="types" class="form-control">
-                <option value="week">week</option>
-                <option value="month">month</option>
-                <option value="sixmonth">sixmonth</option>
-            </select>
-        </div>
-    </div>
-</form>
-<div class="tableDisplay" id="dataTable">
-    <table class="table table-bordered" width="100%" style="margin-bottom:0px;" data-height="460">
-    </table>
-</div>
-
+<div style="height:450px" id="chartmain"></div>
 </body>
-<script>
-    //日期时间格式化20180613
-    function dateFormat(time){
-        //time = 2018-06-13;
-        var splitArr = time.split('-'),
-            newStr = splitArr.join('');
-        return newStr;
-    }
-    $(document).ready(function() {
-        //启动日期插件
-        $('#calendar').datetimepicker({
-            language:  'zh-CN',
-            weekStart: 1,
-            todayBtn:  1,
-            autoclose: 1,
-            todayHighlight: 1,
-            startView: 2,
-            minView: 2,
-            forceParse: 0
-        });
-        //日期改变时刷新table;
-        $('#calendar').on('changeDate', function(ev){
-            $dataTableHot.bootstrapTable('refresh');
-        });
 
-        var type=$("#types option:selected").val();
-        $("#types").change(function(){
-            type = $("#types option:selected").val();
-            $dataTableHot.bootstrapTable('refresh');
-        })
-        var $dataTableHot = $("#dataTable table").bootstrapTable({
-            search: false,
-            pagination: true,
-            pageSize: 15,
-            pageList: [5, 10, 15, 20],
-            showColumns: true,
-            showRefresh: false,
-            locale: "zh-CN",
-            striped: true,
-            toggle:true,
-            ajax:function(request) {
-                $.ajax({
-                    url:"http://127.0.0.1:8080/getdata",
-                    type:"GET",
-                    dataType:"json",
-                    data:{
-                        date:dateFormat($("#calendar").val()),    //dateFormat($("#calendar").val())
-                        type:type,
-                        value:"hot",
-                        order:"asc"
-                    },
-                    success:function(data){
-                        request.success({
-                            row : data
-                        });
-                        $('#dataTable table').bootstrapTable('load', data);
-                    },
-                    error:function(error){
-                        console.log(error);
+<script src="assets/js/echarts.js" type="text/javascript"></script>
+<script src="assets/js/index.js" type="text/javascript"></script>
+<script src="assets/js/file.js" type="text/javascript"></script>
+<script src="assets/js/treeview.js" type="text/javascript"></script>
+<script type="text/javascript">
+    //指定图标的配置和数据
+    var option = {
+        title : {
+            text: '某站点用户访问来源',
+            subtext: '纯属虚构',
+            x:'center'
+        },
+        tooltip : {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+        legend: {
+            orient : 'vertical',
+            x : 'left',
+            data:['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
+        },
+        toolbox: {
+            show : true,
+            feature : {
+                mark : {show: true},
+                dataView : {show: true, readOnly: false},
+                magicType : {
+                    show: true,
+                    type: ['pie', 'funnel'],
+                    option: {
+                        funnel: {
+                            x: '25%',
+                            width: '50%',
+                            funnelAlign: 'left',
+                            max: 1548
+                        }
                     }
-                })
-            },
-            columns:[{
-                field: "projectId",
-                title:"projectId"
-            },{
-                field: "projectName",
-                title:"projectName"
-            }, {
-                field: "value",
-                title:"value"
-            }]
-        });
+                },
+                restore : {show: true},
+                saveAsImage : {show: true}
+            }
+        },
+        calculable : true,
+        series : [
+            {
+                name:'访问来源',
+                type:'pie',
+                radius : '55%',
+                center: ['50%', '60%'],
+                data:[
+                    {value:335, name:'直接访问'},
+                    {value:310, name:'邮件营销'},
+                    {value:234, name:'联盟广告'},
+                    {value:135, name:'视频广告'},
+                    {value:1548, name:'搜索引擎'}
+                ]
+            }
+        ]
+    };
 
-    });
+    //初始化echarts实例
+    var myChart = echarts.init(document.getElementById('chartmain'));
 
+    //使用制定的配置项和数据显示图表
+    myChart.setOption(option);
 </script>
 </html>
