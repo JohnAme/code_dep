@@ -6,11 +6,24 @@
     <title>CDCGraph</title>
 </head>
 
+<body>
 
 <div role="navigation" class="navbar navbar-default navbar-static-top">
     <div class="container">
         <div class="row">
+            <div class="col-sm-6 col-md-6">
+                <ul class="nav navbar-nav">
+                    <li>
+
+                    </li>
+                </ul>
+            </div>
             <div class="navbar-header col-sm-6 col-md-6">
+                <div class="logo-well">
+                    <a href="https://neo4j.com/developer">
+                        <img src="http://neo4j-contrib.github.io/developer-resources/language-guides/assets/img/logo-white.svg" alt="Neo4j World's Leading Graph Database" id="logo">
+                    </a>
+                </div>
                 <div class="navbar-brand">
                     <div class="brand">Code Dependency Graph</div>
                 </div>
@@ -18,100 +31,237 @@
         </div>
     </div>
 </div>
-<body>
 
-<div id="graph" role="presentation" class="main-container page right-side" style="offset-position: right">
+<main>
+    <div class="row">
+        <div class="col-sm-1" style="width: 100%" id="graph" ></div>
+    </div>
+
+</main>
+
 </div>
 
 <style type="text/css">
-    .node { fill:lightgoldenrodyellow ;stroke: #aaa; stroke-width: 1px; }
 
-    #codeCD{fill:#c7254e;stroke-width: 1}
+    .node { fill:#1B9AF7 ; stroke-width: 0px; }
 
     .link {
-        fill: none;
+        fill:none;
         stroke: #666;
         stroke-width: 1.5px;
     }
-    .link.directCD{ stroke: #c7254e; stroke-width:2; stroke-dasharray: 4}
-    .link.dataCD{stroke: #1b809e;stroke-width:1.5 }
-
+    .link.dataCD{
+        stroke-dasharray: 2px;
+    }
     text {
-        font: 16px sans-serif;
+        font: 12px sans-serif;
         pointer-events: none;
         text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+        length:10;
+    }
+    #arrow{
+        fill: #666;
+
     }
 </style>
 
 <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="https://d3js.org/d3.v5.min.js"></script>
 
 <script type="text/javascript">
-    var width = 800, height = 800;
+    var width = 1400, height = 700;
 
-    var force = d3.layout.force()
-        .charge(-2000).linkDistance(200).size([width, height]);
+    var simulation=d3.forceSimulation()
+        .force("link",d3.forceLink().id(d=>d.index).distance(150))
+        .force("charge",d3.forceManyBody().strength(-1000).distanceMax(300))
+        // .force("center",d3.forceCenter(width/2,height/2))
+        .force("x",d3.forceX(width/2))
+        .force("y",d3.forceY(height/2))
+        .force("collide",d3.forceCollide(30));
 
     var svg = d3.select("#graph").append("svg")
-        .attr("width", "100%").attr("height", "100%")
-        .attr("pointer-events", "all");
+        .attr("width", width).attr("height", height);
 
-    d3.json("/trace/CDCGraph/javacg", function(error, graph) {
-        if (error) return;
+    d3.json("/trace/CDCGraph/javacg").then(function(graph) {
+        var links=graph.links;
+        links.sort(function (a,b) {
+            if (a.source > b.source) {return 1;}
+            else if (a.source < b.source) {return -1;}
+            else {
+                if (a.target > b.target) {return 1;}
+                if (a.target < b.target) {return -1;}
+                else {return 0;}
+            }
+        })
+        var array=Array(graph.nodes.length).fill(0).map(x=>Array(graph.nodes.length).fill(0));
+        for (var i=0; i<links.length; i++) {
+            if(links[i].source<links[i].target){
+                array[links[i].source][links[i].target]++;
+                links[i].num=array[links[i].source][links[i].target];
+            }else if(links[i].source>links[i].target){
+                array[links[i].target][links[i].source]++;
+                links[i].num=array[links[i].target][links[i].source];
+            }
+        };
 
-        force.nodes(graph.nodes).links(graph.links).start();
-
-        svg.append("defs").selectAll("marker")
-            .data(["dataCD", "directCD"])
-            .enter().append("marker")
-            .attr("id", function(d) { return d; })
-            .attr("viewBox", "0 -5 7 10")
-            .attr("refX", 10)
-            .attr("refY", -1.5)
-            .attr("markerWidth", 6)
-            .attr("markerHeight", 6)
-            .attr("orient", "auto")
+        svg.append("defs")
+            .append("marker")
+            .attr("viewBox","0 0 30 30")
+            .attr("id", "arrow")
+            .attr("markerWidth", 20)
+            .attr("markerHeight", 25)
+            .attr("refX",15)
+            .attr("refY",5)
+            .attr("orient", "auto-start-reverse")
             .append("path")
-            .attr("d", "M0,-5L80,0L0,5");
+            .attr("d", "M0,0 L10,5L0,10z");
 
         var path = svg.append("g").selectAll("path")
-            .data(force.links())
+            .data(links)
             .enter().append("path")
             .attr("class", function(d) { return "link " + d.type; })
-            .attr("marker-end", function(d) { return "url(#" + d.type + ")"; });
-        path.append("title").text(d=>d.type+": "+d.closeness);
+            .attr("marker-end",function(d) {
+                if(d.type=="directCD"){
+                    return "url(#arrow)"
+                }
+                return "url(#emptyArrow)"; })
+            ;
+        path.append("title").text(function(d){
+            var f=d3.format(".4f");
+            return d.type+": "+f(d.closeness);})
 
-        var node = svg.selectAll(".node")
+        var node = svg.append("g").selectAll(".node")
             .data(graph.nodes).enter()
             .append("circle")
             .attr("class", "node")
-            .attr("r", 12)
-            .call(force.drag);
+            .attr("r", 6)
+            .call(d3.drag()
+                .on("start",dragstarted)
+                .on("drag",dragged)
+                .on("end",dragended));
+
+        node.append("title").text(d=>d.name);
 
         var text = svg.append("g").selectAll("text")
-            .data(force.nodes())
+            .data(graph.nodes)
             .enter().append("text")
             .attr("x", 12)
             .attr("y", ".31em")
-            .text(function(d) { return d.name; });
+            .text(function(d) {
+                if(d.title.length>10){
+                    return d.title.substring(0,10)+"..."
+                }
+                return d.title; });
+
+        var zoom = d3.zoom()
+            .scaleExtent([0.3, 8])
+
+            .on("zoom", zoomed);
+
+        svg.call(zoom);
 
 
-        force.on("tick", function() {
+        simulation.nodes(graph.nodes)
+            .on("tick",ticked);
+        simulation.force("link").links(graph.links);
+
+        // const view=[]
+        // const transition = svg.transition()
+        //     .tween("zoom", d => {
+        //         const i = d3.interpolateZoom(view, [d3.mounse.x, d3.mounse.y, d3.mounse.r * 2]);
+        //         return t => zoomTo(i(t));
+        //     });
+
+        function zoomed(){
+            svg.attr(
+                'transform', 'translate(' + d3.event.transform.x + ','+d3.event.transform.y+')' +
+                ' scale(' + d3.event.transform.k + ')');
+        }
+
+        function ticked() {
+            path.attr("d", pathTransition);
+
             node.attr("cx", function(d) { return d.x; })
                 .attr("cy", function(d) { return d.y; });
             text.attr("transform",function(d){
                 return "translate(" + d.x + "," + d.y + ")";
             })
-            path.attr("d",function(d){
-                var dx = d.target.x - d.source.x,
-                    dy = d.target.y - d.source.y,
-                    dr = Math.sqrt(dx * dx + dy * dy);
-                return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
-            })
-        });
+        }
+
+        function pathTransition(d){
+            const dx = d.target.x - d.source.x;
+            const dy = d.target.y - d.source.y;
+            const num=d.num;
+            if(1==num&&
+                Math.max(array[graph.nodes.indexOf(d.source)][graph.nodes.indexOf(d.target)],
+                    array[graph.nodes.indexOf(d.target)][graph.nodes.indexOf(d.source)])%2!=0){
+                return "M" + d.source.x + "," + d.source.y +" L"+d.target.x+","+d.target.y+"";
+            }
+            var arc=num/2;
+            var direction=num%2;
+            var a=Math.abs(d.source.x-d.target.x)*0.2;
+            var b=Math.abs(d.source.y-d.target.y)*0.2;
+            var mx=(d.source.x+d.target.x)/2.0;
+            var my=(d.source.y+d.target.y)/2.0;
+            if(0==direction){
+                if(0==a){
+                    var xa=d.source.x-a;
+                    var xy=my;
+                    return "M" + d.source.x + "," + d.source.y +" L"+xa+","+xy+" "+d.target.x+","+d.target.y;
+                }
+                if((d.source.x-d.target.x)*(d.source.y-d.target.y)>=0){
+                    var xa=mx-b/2.0;
+                    var xy=my+a/2.0;
+                    return "M" + d.source.x + "," + d.source.y +" L"+xa+","+xy+" "+d.target.x+","+d.target.y;
+                }else {
+                    var xa=mx+b/2.0;
+                    var xy=my+a/2.0;
+                    return "M" + d.source.x + "," + d.source.y +" L"+xa+","+xy+" "+d.target.x+","+d.target.y;
+                }
+            }else{
+                if(0==a){
+                    var xa=d.source.x+a;
+                    var xy=my;
+                    return "M" + d.source.x + "," + d.source.y +" L"+xa+","+xy+" "+d.target.x+","+d.target.y;
+                }
+                if((d.source.x-d.target.x)*(d.source.y-d.target.y)>=0){
+                    var xa=mx+b/2.0;
+                    var xy=my-a/2.0;
+                    return "M" + d.source.x + "," + d.source.y +" L"+xa+","+xy+" "+d.target.x+","+d.target.y;
+                }else {
+                    var xa=mx-b/2.0;
+                    var xy=my-a/2.0;
+                    return "M" + d.source.x + "," + d.source.y +" L"+xa+","+xy+" "+d.target.x+","+d.target.y;
+                }
+            }
+            return "M" + d.source.x + "," + d.source.y +" L"+d.target.x+","+d.target.y+"";
+        }
 
 
     });
+    function dragstarted(d) {
+        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+    }
+
+    function dragged(d) {
+        d.fx = d3.event.x;
+        d.fy = d3.event.y;
+    }
+
+    function dragended(d) {
+        if (!d3.event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+    }
+
+
+
+
+
+
+
 </script>
 </body>
 </html>

@@ -38,52 +38,38 @@ public class GraphServiceImpl implements GraphService {
         Set<MyClass> classes=myClassRepository.findByProjectAndThreshold(project,callThreshold,dataThreshold);
         Set<CodeDcy> directCD=codeDcyRepository.getCodeCDFromProjectAndThreshold(project,callThreshold);
         Set<DataDcy> dataCD=dataDcyRepository.getDataCDFromProjectAndThreshold(project,dataThreshold);
-        return asD3(classes,directCD,dataCD);
+
+        return asD3(classes);
     }
-    private Map<String,Object> asD3(Set<MyClass> myClasses,Set<CodeDcy> directCD,Set<DataDcy> dataCD){
+    private Map<String,Object> asD3(Set<MyClass> myClasses){
         List<Map<String,Object>> nodes=new ArrayList<>();
         List<Map<String,Object>> links=new ArrayList<>();
 
         Iterator<MyClass> iterator=myClasses.iterator();
-        int i=0;
-        int source=0;
+
         while (iterator.hasNext()){
             MyClass myClass=iterator.next();
             Set<CodeDcy> direct=myClass.getOutDirectCD();
 
-            if(addClassToNode(nodes,myClass)){
-                i++;
-            }
+            int source=getOrInsertToNodes(nodes,myClass.getPath(),myClass.getName());
+
             Iterator<CodeDcy> directIterator=direct.iterator();
             while (directIterator.hasNext()){
                 CodeDcy codeDcy=directIterator.next();
                 MyClass otherClass=codeDcy.getInClass();
-                Map<String,Object> temp=new HashMap<>();
-                temp.put("name",StringUtil.getPathAndName(otherClass.getPath(),otherClass.getName()));
-                temp.put("title",otherClass.getName());
-                int target=nodes.indexOf(temp);
-                if(-1==target){
-                    nodes.add(temp);
-                    target=i++;
-                }
+                int target=getOrInsertToNodes(nodes,otherClass.getPath(),otherClass.getName());
+
                 addDependencToLink(links, source, target, "directCD",codeDcy.getCloseness());
             }
-            Set<DataDcy> data=myClass.getSharedDT();
-            Iterator<DataDcy> dataIterator=data.iterator();
+
+            Iterator<DataDcy> dataIterator=myClass.getSharedDT().iterator();
             while (dataIterator.hasNext()){
                 DataDcy dataDcy=dataIterator.next();
                 MyClass otherClass=dataDcy.otherClass(myClass.getId());
-                Map<String,Object> temp=new HashMap<>();
-                temp.put("name",StringUtil.getPathAndName(otherClass.getPath(),otherClass.getName()));
-                temp.put("title",otherClass.getName());
-                int target=nodes.indexOf(temp);
-                if(-1==target){
-                    nodes.add(temp);
-                    target=i++;
-                }
+                int target=getOrInsertToNodes(nodes,otherClass.getPath(),otherClass.getName());
+
                 addDependencToLink(links, source, target, "dataCD",dataDcy.getCloseness());
             }
-            source++;
         }
         Map<String,Object> res=new HashMap<>();
         res.put("nodes",nodes);
@@ -118,10 +104,23 @@ public class GraphServiceImpl implements GraphService {
         }
         return false;
     }
-    private boolean addClassToNode(List<Map<String,Object>> nodes,MyClass myClass){
+
+    private int getOrInsertToNodes(List<Map<String,Object>> nodes,String path,String name){
         Map<String,Object> temp=new HashMap<>();
-        temp.put("name", StringUtil.getPathAndName(myClass.getPath(),myClass.getName()));
-        temp.put("title",myClass.getName());
+        temp.put("name",StringUtil.getPathAndName(path,name));
+        temp.put("title",name);
+        int res=nodes.indexOf(temp);
+        if(-1==res){
+            nodes.add(temp);
+            res=nodes.size()-1;
+        }
+        return res;
+    }
+
+    private boolean addClassToNode(List<Map<String,Object>> nodes,String path,String name){
+        Map<String,Object> temp=new HashMap<>();
+        temp.put("name", StringUtil.getPathAndName(path,name));
+        temp.put("title",name);
         if(!nodes.contains(temp)){
             nodes.add(temp);
             return true;
