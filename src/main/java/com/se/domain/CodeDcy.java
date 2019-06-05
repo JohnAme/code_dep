@@ -7,8 +7,8 @@ public class CodeDcy {
     @Id
     @GeneratedValue
     private Long id;
-    @Property private int directCD;
-    @Property private double closeness;
+    private int directCD;
+    private double closeness;
     @StartNode
     private MyClass outClass;
     @EndNode

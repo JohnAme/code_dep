@@ -13,13 +13,13 @@ import java.util.Collection;
  * @author Mark Angrish
  * @author Michael J. Simons
  */
-@RepositoryRestResource(collectionResourceRel = "movies", path = "movies")
-public interface MovieRepository extends Neo4jRepository<Movie, Long> {
 
-	Movie findByTitle(@Param("title") String title);
+public interface MovieRepository {
 
-	Collection<Movie> findByTitleLike(@Param("title") String title);
-
-    @Query("MATCH (m:Movie)<-[r:ACTED_IN]-(a:Person) RETURN m,r,a LIMIT {limit}")
-    Collection<Movie> graph(@Param("limit") int limit);
+//	Movie findByTitle(@Param("title") String title);
+//
+//	Collection<Movie> findByTitleLike(@Param("title") String title);
+//
+//    @Query("MATCH (m:Movie)<-[r:ACTED_IN]-(a:Person) RETURN m,r,a LIMIT {limit}")
+//    Collection<Movie> graph(@Param("limit") int limit);
 }

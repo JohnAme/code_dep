@@ -99,29 +99,29 @@ public class CaptureCDServiceImpl implements CaptureCDService {
         }
     }
 
-    @Transactional
+//    @Transactional
     public void calculateDataCloseness(String projectName,Map<String,Double> idftMap){
-        Set<DataDcy> dataDepencency=dataDcyRepository.getDataDependencyFromProject(projectName);
-        for(DataDcy dataDcy:dataDepencency){
-            MyClass fir=dataDcy.getFirClass();
-            MyClass sec=dataDcy.getSecClass();
-            Set<String> intersectionDT=dataDcy.getDataTypes();
-            Set<String> unionDT=new HashSet<>();
-
-            Set<DataDcy> allDT=new HashSet<>();
-            allDT.addAll(fir.getSharedDT());
-            allDT.addAll(sec.getSharedDT());
-            for(DataDcy temp:allDT){
-                unionDT.addAll(temp.getDataTypes());
-            }
-            double interesect=accumulate(intersectionDT,idftMap);
-            double union=accumulate(unionDT,idftMap);
-            if(0==union){
-                continue;
-            }
-            dataDcy.setCloseness(interesect/union);
-            dataDcyRepository.save(dataDcy,0);
-        }
+//        List<DataDcy> dataDepencency=dataDcyRepository.getDataDependencyFromProject(projectName);
+//        for(DataDcy dataDcy:dataDepencency){
+//            MyClass fir=dataDcy.getFirClass();
+//            MyClass sec=dataDcy.getSecClass();
+//            Set<String> intersectionDT=dataDcy.getDataTypes();
+//            Set<String> unionDT=new HashSet<>();
+//
+//            Set<DataDcy> allDT=new HashSet<>();
+//            allDT.addAll(fir.getSharedDT());
+//            allDT.addAll(sec.getSharedDT());
+//            for(DataDcy temp:allDT){
+//                unionDT.addAll(temp.getDataTypes());
+//            }
+//            double interesect=accumulate(intersectionDT,idftMap);
+//            double union=accumulate(unionDT,idftMap);
+//            if(0==union){
+//                continue;
+//            }
+//            dataDcy.setCloseness(interesect/union);
+//            dataDcyRepository.save(dataDcy,0);
+//        }
     }
 
 
@@ -136,7 +136,7 @@ public class CaptureCDServiceImpl implements CaptureCDService {
         return res;
     }
 
-    @Transactional
+//    @Transactional
     public void createDataDependency(Set<MyClass>classes,Map<Set<String>,Set<String>> dataTypes){
         for(Set<String> set:dataTypes.keySet()){
             Iterator<String> iterator=set.iterator();
@@ -160,7 +160,7 @@ public class CaptureCDServiceImpl implements CaptureCDService {
                 continue;
             }
             DataDcy dataDcy=new DataDcy();
-            dataDcy.setDataTypes(dataTypes.get(set));
+//            dataDcy.setDataTypes(dataTypes.get(set));
             dataDcy.setFirClass(startClass);
             dataDcy.setSecClass(endClass);
             dataDcyRepository.save(dataDcy,0);
@@ -190,7 +190,7 @@ public class CaptureCDServiceImpl implements CaptureCDService {
 
     }
 
-    @Transactional
+//    @Transactional
     public void createDirectCD(Set<MyClass> classes,Map<String,Integer> call,String caller){
         Iterator<MyClass> iterator=classes.iterator();
         MyClass startClass=null;
@@ -226,5 +226,94 @@ public class CaptureCDServiceImpl implements CaptureCDService {
             codeDcy.setDirectCD(directCD);
             directCDRepository.save(codeDcy);
         }
+    }
+
+
+    public void getCDFromJarFile(String path,long pid,String pname) {
+        File file=new File(path);
+        if(!file.exists()){
+            System.err.println("file not found:"+path);
+        }
+
+        try (JarFile jarFile=new JarFile(file)){
+//            String projectName=StringUtil.getDirectory(file.getName());
+            Enumeration<JarEntry> entryEnumeration=jarFile.entries();
+            List<String> names=new ArrayList<>();
+            Set<MyClass> classes=new HashSet<>();
+            List<String> nameAsClass=new ArrayList<>();
+
+            while(entryEnumeration.hasMoreElements()){
+                JarEntry jarEntry=entryEnumeration.nextElement();
+                if(jarEntry.isDirectory()||!jarEntry.getName().endsWith(".class")){
+                    continue;
+                }else{
+                    String entryAsClass= StringUtil.jarEntryAsClassName(jarEntry.getName());
+                    String name=StringUtil.getLeaf(entryAsClass);
+                    String directory=StringUtil.getDirectory(entryAsClass);
+                    if(!name.contains("$")){
+                        MyClass myClass=new MyClass();
+                        myClass.setPath(directory);
+                        myClass.setName(name);
+//                        myClass.setProject(projectName);
+                        myClass.setPid(pid);
+                        System.out.println("pid"+myClass.getPid());
+                        myClass=classRepository.save(myClass);
+                        System.out.println("id:"+myClass.getId());
+                        classes.add(myClass);
+                        names.add(jarEntry.getName());
+                        nameAsClass.add(entryAsClass);
+                    }
+                }
+            }
+
+            Map<String,Integer> occurrence=new HashMap<>();
+            Map<Set<String>,Set<String>> sharedData=new HashMap<>();
+            for(String name:names){
+                ClassParser cp=new ClassParser(path,name);
+                try{
+                    MyClassVisitor myClassVisitor=new MyClassVisitor(cp.parse(),nameAsClass);
+                    myClassVisitor.setOccurrence(occurrence);
+                    myClassVisitor.setSharedDataType(sharedData);
+                    myClassVisitor=myClassVisitor.start();
+                    Map<String, Integer> map=myClassVisitor.getClassCall();
+
+                    createDirectCD(classes,map,StringUtil.jarEntryAsClassName(name));
+                }catch (IOException ex){
+                    ex.printStackTrace();
+                }
+            }
+            Map<String,Double> idftMap=calculateIdtf(occurrence);
+            createDataDependency(classes,sharedData);
+            calculateDataCloseness(pid,idftMap);
+            classRepository.setDirectCDClosenessFromPid(pid);
+        }catch (IOException e){
+            System.err.println("Error while processing jar: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+//    @Transactional
+    public void calculateDataCloseness(long pid,Map<String,Double> idftMap){
+//        Set<DataDcy> dataDepencency=dataDcyRepository.getDataDependencyFromPid(pid);
+//        for(DataDcy dataDcy:dataDepencency){
+//            MyClass fir=dataDcy.getFirClass();
+//            MyClass sec=dataDcy.getSecClass();
+////            Set<String> intersectionDT=dataDcy.getDataTypes();
+//            Set<String> unionDT=new HashSet<>();
+//
+//            Set<DataDcy> allDT=new HashSet<>();
+//            allDT.addAll(fir.getSharedDT());
+//            allDT.addAll(sec.getSharedDT());
+//            for(DataDcy temp:allDT){
+//                unionDT.addAll(temp.getDataTypes());
+//            }
+//            double interesect=accumulate(intersectionDT,idftMap);
+//            double union=accumulate(unionDT,idftMap);
+//            if(0==union){
+//                continue;
+//            }
+//            dataDcy.setCloseness(interesect/union);
+//            dataDcyRepository.save(dataDcy,0);
+//        }
     }
 }

@@ -1,5 +1,8 @@
 package com.se.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SqlClass {
 
     private Long classId;
@@ -8,8 +11,21 @@ public class SqlClass {
     private String className;
     private String content;
 
+    private List<ClassTF> ctfs;
+
+
     public SqlClass() {
+        ctfs=new ArrayList<>();
     }
+
+    public List<ClassTF> getCtfs() {
+        return ctfs;
+    }
+
+    public void setCtfs(List<ClassTF> ctfs) {
+        this.ctfs = ctfs;
+    }
+
 
     public Long getClassId() {
         return classId;

@@ -10,7 +10,7 @@ public class DataDcy {
     @Id
     @GeneratedValue
     private Long id;
-    private Set<String> dataTypes;
+    private List<String> dataTypes;
     private double closeness;
 
     @StartNode
@@ -30,11 +30,11 @@ public class DataDcy {
         this.id = id;
     }
 
-    public Set<String> getDataTypes() {
+    public List<String> getDataTypes() {
         return dataTypes;
     }
 
-    public void setDataTypes(Set<String> dataTypes) {
+    public void setDataTypes(List<String> dataTypes) {
         this.dataTypes = dataTypes;
     }
 

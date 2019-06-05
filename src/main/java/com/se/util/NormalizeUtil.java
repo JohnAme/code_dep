@@ -1,5 +1,6 @@
 package com.se.util;
 
+import com.mysql.cj.x.protobuf.MysqlxDatatypes;
 import com.se.snowball.EnglishStemmer;
 
 import java.util.Arrays;
@@ -38,7 +39,7 @@ public class NormalizeUtil {
     public static String normalize(String str,int length){
         str=str.toLowerCase();
         StringBuilder sb=new StringBuilder();
-        str=chararctorClean(str);
+        str=charactorClean(str);
 
         String corpus[]=str.split(" ");
         List<String> stopWordList= Arrays.asList(stopwords);
@@ -59,7 +60,40 @@ public class NormalizeUtil {
         return sb.toString();
     }
 
-    public static String chararctorClean(String input) {
+    public static String camelSplit(String str){
+        str=doCapitalSeqenceProcess(str);
+        StringBuilder builder=new StringBuilder();
+        String words[]=str.split(" ");
+
+        for(String word:words){
+            for(String s:word.split("(?<!^)(?=[A-Z])")){
+                if(s.length()>0){
+                    builder.append(s+" ");
+                }
+            }
+        }
+        return builder.toString();
+    }
+    private static String doCapitalSeqenceProcess(String str){
+        String res=str;
+        boolean lastIsUpperCase=false;
+        for(int i=0;i<str.length();i++){
+            char c=str.charAt(i);
+            if(!Character.isUpperCase(c)){
+                lastIsUpperCase=false;
+            }else if(Character.isUpperCase(c)){
+                if(lastIsUpperCase){
+                    //do nothing
+                }else{
+                    res=res.substring(0,i)+String.valueOf(Character.toLowerCase(c))+res.substring(i+1,str.length());
+                }
+                lastIsUpperCase=true;
+            }
+        }
+        return res;
+    }
+
+    public static String charactorClean(String input) {
         StringBuilder sb = new StringBuilder();
 
         Pattern p = Pattern.compile("[a-z]+");
@@ -70,6 +104,10 @@ public class NormalizeUtil {
             sb.append(" ");
         }
         return sb.toString();
+    }
+    public static void main(String[] args){
+        System.out.println(camelSplit(camelSplit("abstrArabCreaDke9o")));
+        System.out.println(camelSplit(camelSplit("AbsdiDsdjCsidjfDBdsdifjDSIFDIJsdf")));
     }
 
 }

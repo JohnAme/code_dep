@@ -1,6 +1,7 @@
 server:
   servlet:
     context-path: /trace
+  connection-timeout: 180000
 mybatis:
   typeAliasesPackage: com.se.entity
   mapperLocations: classpath:/mapping/*.xml
@@ -26,4 +27,12 @@ spring:
   mvc:
     view:
       suffix: .html
-
+logging:
+  level:
+    org:
+      neo4j:
+        ogm:
+          drivers:
+            bolt:
+              request:
+                BoltRequest: WARN

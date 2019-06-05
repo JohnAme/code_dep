@@ -15,6 +15,9 @@ public class MyClass {
     private String name;
     private String path;
     private String project;
+    private long pid;
+
+
 
     @Relationship(type = "CODE_DEPENDENCY",direction = Relationship.INCOMING)
     Set<CodeDcy> inDirectCD;
@@ -83,5 +86,13 @@ public class MyClass {
 
     public void setSharedDT(Set<DataDcy> sharedDT) {
         this.sharedDT = sharedDT;
+    }
+
+    public long getPid() {
+        return pid;
+    }
+
+    public void setPid(long pid) {
+        this.pid = pid;
     }
 }

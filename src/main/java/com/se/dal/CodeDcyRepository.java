@@ -11,6 +11,9 @@ import java.util.Set;
 
 @Repository
 public interface CodeDcyRepository extends Neo4jRepository<CodeDcy,Long> {
-    @Query("match (a:Class{project:{project}})-[r:CODE_DEPENDENCY]->() where r.closeness>={threshold} return r")
+    @Query("match (a:Class{project:{project}})-[r:CODE_DEPENDENCY]->() where r.closeness>={threshold} return *")
     Set<CodeDcy> getCodeCDFromProjectAndThreshold(@Param("project")String project, @Param("threshold")double threshold);
+
+    @Query("match (a:Class{project:{project}})-[r:CODE_DEPENDENCY]->() return *")
+    Set<CodeDcy> getCodeCDFromProject(@Param("project")String project);
 }

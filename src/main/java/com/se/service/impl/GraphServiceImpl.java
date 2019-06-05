@@ -41,6 +41,28 @@ public class GraphServiceImpl implements GraphService {
 
         return asD3(classes);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Map<String,Object> getRegion(String project,String cname,double dc,double cd){
+//        System.out.println("flag0");
+//        if(myClassRepository.hasDirectNeighbor(project,cname,dc)||myClassRepository.hasDataNeighbor(project,cname,cd)){
+//
+//            System.out.println("flag1");
+//            return asD3(set);
+//        }else{
+//            System.out.println("flag2");
+//        }
+//        System.out.println("flag3");
+        Set<MyClass> set=myClassRepository.getRegion(project,cname,dc,cd);
+        System.out.println("region size:"+set.size());
+        for(MyClass c:set){
+            System.out.println(c.getName());
+        }
+        return asD3(set);
+    }
+
+
     private Map<String,Object> asD3(Set<MyClass> myClasses){
         List<Map<String,Object>> nodes=new ArrayList<>();
         List<Map<String,Object>> links=new ArrayList<>();

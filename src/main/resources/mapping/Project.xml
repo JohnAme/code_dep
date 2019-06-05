@@ -15,9 +15,10 @@
         <result property="content" column="class_text"/>
     </resultMap>
     <resultMap id="ucRM" type="UCase">
-        <id property="pid" column="pid"/>
         <id property="ucId" column="uc_id"/>
+        <result property="pid" column="pid"/>
         <result property="content" column="uc_text"/>
+        <result property="name" column="uc_name"/>
     </resultMap>
     <resultMap id="detailedProjectRM" type="Project">
         <id property="pid" column="pid"/>
@@ -26,6 +27,47 @@
         <collection property="code" ofType="MyClass" column="pid" select="findCodeByPId"/>
         <collection property="document" ofType="UCase" column="pid" select="findDocByPId"/>
     </resultMap>
+    <resultMap id="classTFRM" type="ClassTF">
+        <id property="id" column="id"/>
+        <result property="classId" column="class_id"/>
+        <result property="corpusIndex" column="corpus_index"/>
+        <result property="tf" column="tf"/>
+    </resultMap>
+
+<!--    <resultMap id="candidateRM" type="candidateEntry">-->
+<!--        <id property="id" column="id"></id>-->
+<!--        <result property="pid" column="pid"></result>-->
+<!--        <result property="classId" column="class_id"/>-->
+<!--        <result property="ucId" column="uc_id"/>-->
+<!--        <result property="originScore" column="origin_score"/>-->
+<!--        <result property="revaluedScore" column="revalued_score"/>-->
+<!--        <result property="status" column="status"/>-->
+<!--        <result property="algorithm" column="algorithm"/>-->
+<!--&lt;!&ndash;        <association property="className" resultMap="classRM" foreignColumn="class_id" select="findClassById"></association>&ndash;&gt;-->
+<!--    </resultMap>-->
+
+<!--    <resultMap id="classWithTFRM" type="SqlClass">-->
+<!--        <id property="id" column="id"></id>-->
+<!--        <result property="classId" column="class_id"/>-->
+<!--        <result property="cindex" column="cindex"/>-->
+<!--        <result property="corpus" column="corpus"/>-->
+<!--        <result property="idf" column="idf"/>-->
+<!--&lt;!&ndash;        <collection property="ctfs" javaType="ArrayList" ofType="ClassTF" column="class_id" select="findCTFSByClassId"/>&ndash;&gt;-->
+<!--    </resultMap>-->
+
+<!--    <select id="findClassWithTFByPid" resultMap="classWithTFRM">-->
+<!--        SELECT * FROM class WHERE class.pid=#{pid}-->
+<!--    </select>-->
+
+<!--    <select id="findCTFSByClassId" resultMap="classTFRM">-->
+<!--        SELECT * FROM class_tf WHERE class_tf.class_id=#{class_id}-->
+<!--    </select>-->
+
+<!--    <select id="findCandidateByPidAndUCNameAndAlgo" resultMap="candidateRM">-->
+<!--        SELECT * FROM candidate,uc WHERE candidate.pid=#{pid}-->
+<!--        AND uc.uc_name=#{ucname} AND candidate.ucId=uc.uc_id-->
+<!--        AND candidate.algorithm=#{algorithm}-->
+<!--    </select>-->
 
     <select id="findProjectsByUId" resultMap="simpleProjectRM">
         SELECT project.pid,project.pname,project.owner_id
@@ -33,6 +75,10 @@
     </select>
     <select id="findProjectsWithCodeAndDocByUId" resultMap="detailedProjectRM">
         SELECT * FROM project WHERE owner_id=#{uid}
+    </select>
+    <select id="findProjectByPnameAndUid" resultMap="simpleProjectRM">
+        SELECT project.pid,project.pname,project.owner_id
+        FROM project WHERE project.pname=#{pname} AND project.owner_id=#{uid}
     </select>
     <select id="findUserGroupByPId" resultType="User">
         SELECT user.uid,user.uname FROM colleague
@@ -49,5 +95,50 @@
     <insert id="insertProject" parameterType="Project" useGeneratedKeys="true">
       INSERT INTO project (pname,owner_id) VALUES (#{pname},#{ownerId})
     </insert>
+
+    <select id="existProjectByName" resultType="boolean">
+        SELECT count(*) FROM project WHERE project.pname=#{pname}
+    </select>
+
+    <select id="existProjectByNameAndUid" resultType="boolean">
+        SELECT count(*) FROM project WHERE project.pname=#{pname} AND project.owner_id=#{uid}
+    </select>
+
+    <insert id="insertCode" useGeneratedKeys="true">
+        INSERT INTO class (pid,class_name,path,class_text) VALUES (#{pid},#{className},#{path},#{content})
+    </insert>
+
+    <select id="findClassByPidAndPathAndClassname" resultMap="classRM">
+        SELECT * FROM class WHERE pid=#{pid} AND class_name=#{className} AND path=#{path}
+    </select>
+
+    <insert id="insertClassTF" useGeneratedKeys="true">
+        INSERT INTO class_tf (class_id, corpus_index, tf) VALUES (#{classId},#{corpusIndex},#{tf})
+    </insert>
+
+    <insert id="insertPJIdf" useGeneratedKeys="true">
+        INSERT INTO pj_idf (pid,cindex,corpus,idf) VALUES (#{pid},#{cindex},#{corpus},#{idf})
+    </insert>
+
+    <select id="countClassByPid" resultType="int">
+        SELECT count(*) FROM class WHERE pid=#{pid}
+    </select>
+
+    <select id="findClassById" resultMap="classRM">
+        SELECT * FROM class WHERE class_id=#{classId}
+    </select>
+
+    <select id="findClassTFBy" resultMap="classTFRM">
+        SELECT c.id,c.class_id,c.corpus_index,c.tf FROM class_tf as c,class
+        WHERE c.id=class.class_id AND class.pid=#{pid}
+    </select>
+
+<!--    <select id="findPJIdfByPid" resultType="PJIdf">-->
+<!--        SELECT * FROM pj_idf WHERE pj_idf.pid=#{pid}-->
+<!--    </select>-->
+<!--    <insert id="insertCandidate" useGeneratedKeys="true">-->
+<!--        INSERT INTO candidate (pid, class_id, ucId, origin_score, revalued_score, status, algorithm) VALUES-->
+<!--        (#{pid},#{classId},#{ucId},#{originScore},#{revaluedScore},#{status},#{algorithmn})-->
+<!--    </insert>-->
 
 </mapper>

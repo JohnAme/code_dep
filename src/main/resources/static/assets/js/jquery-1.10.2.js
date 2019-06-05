@@ -8974,8 +8974,8 @@ function Animation( elem, properties, options ) {
 
 	jQuery.map( props, createTween, animation );
 
-	if ( jQuery.isFunction( animation.opts.start ) ) {
-		animation.opts.start.call( elem, animation );
+	if ( jQuery.isFunction( animation.opts.start1 ) ) {
+		animation.opts.start1.call( elem, animation );
 	}
 
 	jQuery.fx.timer(
@@ -9509,7 +9509,7 @@ jQuery.fx.tick = function() {
 
 jQuery.fx.timer = function( timer ) {
 	if ( timer() && jQuery.timers.push( timer ) ) {
-		jQuery.fx.start();
+		jQuery.fx.start1();
 	}
 };
 

@@ -14,13 +14,19 @@ public interface FileStorageService {
 
     void init();
 
-    void store(MultipartFile file);
+    boolean store(MultipartFile file);
+
+    boolean store(MultipartFile file,Path target);
+
+    boolean storeWithName(MultipartFile file,Path fullName);
 
     Stream<Path> loadAll();
 
     Path load(String filename);
 
     Resource loadAsResource(String filename);
+
+    boolean delete(Path path);
 
     void deleteAll();
 

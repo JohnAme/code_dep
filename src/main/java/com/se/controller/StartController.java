@@ -1,9 +1,11 @@
 package com.se.controller;
 
 
+import com.se.entity.CandidateEntry;
 import com.se.entity.SqlClass;
+import com.se.service.GenerateIRListService;
 import com.se.service.ProjectManageService;
-import com.se.util.CandidateEntry;
+import com.se.util.CandidateEntryDeprecatyed;
 
 import com.se.util.CandidateUtil;
 import com.se.util.TreeViewUtil;
@@ -30,22 +32,25 @@ public class StartController {
     private static final Logger logger= LoggerFactory.getLogger(StartController.class);
 
     private final ProjectManageService projectManageService;
+    private final GenerateIRListService generateIRListService;
     @Autowired
-    public StartController(ProjectManageService projectManageService){
+    public StartController(ProjectManageService projectManageService,GenerateIRListService generateIRListService){
         this.projectManageService=projectManageService;
+        this.generateIRListService=generateIRListService;
     }
 
     @GetMapping(value="/getCandidateList")
     @ResponseBody
     public ResponseEntity<?> getCandidateList(@RequestParam(value="pid",required=true)long pid){
-        List<CandidateEntry> list=projectManageService.calculateCandidateList(pid);
+        List<CandidateEntryDeprecatyed> list=projectManageService.calculateCandidateList(pid);
+//        list=generateIRListService.computeCandidateList(pid,"UC11", CandidateEntry.VSM);
         List<CandidateUtil> res=new ArrayList<>();
 
         if(list.isEmpty()){
             logger.error("Project not found");
             return new ResponseEntity<Object>("project not found",HttpStatus.NOT_FOUND);
         }
-        for(CandidateEntry entry:list){
+        for(CandidateEntryDeprecatyed entry:list){
 //            System.out.format("class:%s,score:%.4f\n",entry.getClassName(),entry.getScore());
             CandidateUtil row=new CandidateUtil(
                     entry.getClassName(),
@@ -76,6 +81,11 @@ public class StartController {
     @GetMapping("/uc")
     @ResponseBody
     public String getUC(){
-        return projectManageService.getTempUC();//todo ask Gao
+        return projectManageService.getTempUC();//todo implement uc
+    }
+
+    @RequestMapping("/start/doProject")
+    public String doProject(){
+        return "start";
     }
 }

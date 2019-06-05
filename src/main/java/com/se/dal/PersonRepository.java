@@ -7,7 +7,7 @@ import org.springframework.data.neo4j.repository.Neo4jRepository;
  * @author pdtyreus
  * @author Mark Angrish
  */
-public interface PersonRepository extends Neo4jRepository<Person, Long> {
+public interface PersonRepository {
 
     Person findByName(String name);
 

@@ -1,5 +1,6 @@
 package com.se.dal;
 
+import com.se.domain.DataDcy;
 import com.se.domain.MyClass;
 import com.se.util.SharedData;
 import org.springframework.data.neo4j.annotation.Depth;
@@ -38,6 +39,44 @@ public interface MyClassRepository extends Neo4jRepository<MyClass, Long> {
             "where (l1+l2)>0\n" +
             "set r.closeness=2.0*r.directCD/(l1+l2)")
     public void setDirectCDClosenessFromProject(@Param("project")String projectName);
+
+    @Query("match (a:Class {pid: {pid}})-[r:CODE_DEPENDENCY]->(b)\n" +
+            "with r,a,b,\n" +
+            "reduce(acc1=0,v1 in [(a)-[r1:CODE_DEPENDENCY]->()|r1.directCD]|acc1+v1) as l1,\n" +
+            "reduce(acc2=0,v2 in [()-[r2:CODE_DEPENDENCY]->(b)|r2.directCD]|acc2+v2) as l2\n" +
+            "where (l1+l2)>0\n" +
+            "set r.closeness=2.0*r.directCD/(l1+l2)")
+    public void setDirectCDClosenessFromPid(@Param("pid")long pid);
+
+    @Query("match (a:Class {pid: {pid},path:{path},name:{name}})-[r:CODE_DEPENDENCY]->(b)\n" +
+            "with r,a,b,\n" +
+            "reduce(acc1=0,v1 in [(a)-[r1:CODE_DEPENDENCY]->()|r1.directCD]|acc1+v1) as l1,\n" +
+            "reduce(acc2=0,v2 in [()-[r2:CODE_DEPENDENCY]->(b)|r2.directCD]|acc2+v2) as l2\n" +
+            "where (l1+l2)>0\n" +
+            "set r.closeness=2.0*r.directCD/(l1+l2)")
+    public MyClass getRegionByClassAndThreshold(@Param("pid")long pid,@Param("path")String path,@Param("name")String name,
+                                                @Param("cd")double shoresholdCD,@Param("dc")double thresholdDC);
+
+    @Query("match (c:Class{project:{pname}}) return count(c) > 0 as c")
+    public boolean findByProjectName(@Param("pname")String pname);
+
+    @Query("match (n:Class{project:{project},name:{cname}})-[c:CODE_DEPENDENCY]-() \n" +
+            "where c.closeness>{dc}\n" +
+            "return count(c)>0 as d")
+    public boolean hasDirectNeighbor(@Param("project")String project,@Param("cname")String cname,@Param("dc")double dc);
+
+    @Query("match (n:Class{project:{project},name:{cname}})-[c:DATA_DEPENDENCY]-() \n" +
+            "where c.closeness>{cd}\n" +
+            "return count(c)>0 as d")
+    public boolean hasDataNeighbor(@Param("project")String project,@Param("cname")String cname,@Param("cd")double cd);
+
+    @Query("match path=(n:Class{project:{project},name:{cname}})-[*]-() \n" +
+            "where all(v in relationships(path) where case when type(v)=\"DATA_DEPENDENCY\" \n" +
+            "then v.closeness>{cd}\n" +
+            "else v.closeness>{dc} end)\n" +
+            "return path")
+    public Set<MyClass> getRegion(@Param("project")String project,@Param("cname")String cname,@Param("dc")double dc,@Param("cd")double cd);
+
 
 //    @Query("match (a)-[r:DATA_DEPENDENCY]->(b) where r.sharedData is not null\n" +
 //            "with id(r) as id,\n" +

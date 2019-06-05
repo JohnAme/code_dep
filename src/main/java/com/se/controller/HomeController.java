@@ -3,6 +3,12 @@ package com.se.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 @Controller()
 @RequestMapping(value="/")
@@ -31,7 +37,11 @@ public class HomeController {
     }
 
     @RequestMapping("/CDCGraph")
-    public String toCDCGraph(){
+    public String toCDCGraph(HttpServletRequest request) {
+        request.setAttribute("test", "hello");
+        ScriptEngineManager manager=new ScriptEngineManager();
+        ScriptEngine engine=manager.getEngineByName("javascript");
+        engine.put("test","hello param");
         return "graph";
     }
 
