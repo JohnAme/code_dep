@@ -9,15 +9,14 @@ img {
     border-bottom:2px solid #563d7c;
 }
 
-.container{
-     padding-left: 0;
-     margin-left: 100px;
-     margin-right: 20px;
- }
+.container {
+    width: auto;
+    margin-right: 50px;
+    margin-left: 50px;
+}
+
 
 .side-bar .list-group-item{
-    /*border: 0;*/
-
     border-radius: 3px;
     margin-top: 10px;
     margin-bottom: 5px;

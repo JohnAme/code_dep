@@ -16,7 +16,7 @@ spring:
     url: jdbc:mysql://localhost:3306/code_dep?characterEncoding=utf-8&serverTimezone=UTC
     driverClassName: com.mysql.cj.jdbc.Driver
     username: root
-    password:
+    password: maoliwen227
     type: com.zaxxer.hikari.HikariDataSource
   data:
     neo4j:

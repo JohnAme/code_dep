@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Requirements' Traceable Query Tool</title>
+
+    <link href="lib/css/bootstrap.css" rel="stylesheet"/>
+    <link href="lib/css/bootstrap-table.css" rel="stylesheet"/>
+    <link href="assets/css/docs.css" rel="stylesheet"/>
+    <link href="assets/css/index.css" rel="stylesheet"/>
+    <link href="assets/css/product.css" rel="stylesheet"/>
+    <link href="assets/css/grid-framework.less" rel="stylesheet/less" type="text/css"/>
+    <link href="lib/css/bootstrap-treeview.min.css" rel="stylesheet">
+</head>
+<body>
+<div style="height:450px" id="chartmain"></div>
+</body>
+
+<script src="assets/js/echarts.js" type="text/javascript"></script>
+<script src="assets/js/index.js" type="text/javascript"></script>
+<script src="assets/js/file.js" type="text/javascript"></script>
+<script src="assets/js/treeview.js" type="text/javascript"></script>
+<script type="text/javascript">
+    //指定图标的配置和数据
+    var option = {
+        title : {
+            text: '某站点用户访问来源',
+            subtext: '纯属虚构',
+            x:'center'
+        },
+        tooltip : {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+        legend: {
+            orient : 'vertical',
+            x : 'left',
+            data:['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
+        },
+        toolbox: {
+            show : true,
+            feature : {
+                mark : {show: true},
+                dataView : {show: true, readOnly: false},
+                magicType : {
+                    show: true,
+                    type: ['pie', 'funnel'],
+                    option: {
+                        funnel: {
+                            x: '25%',
+                            width: '50%',
+                            funnelAlign: 'left',
+                            max: 1548
+                        }
+                    }
+                },
+                restore : {show: true},
+                saveAsImage : {show: true}
+            }
+        },
+        calculable : true,
+        series : [
+            {
+                name:'访问来源',
+                type:'pie',
+                radius : '55%',
+                center: ['50%', '60%'],
+                data:[
+                    {value:335, name:'直接访问'},
+                    {value:310, name:'邮件营销'},
+                    {value:234, name:'联盟广告'},
+                    {value:135, name:'视频广告'},
+                    {value:1548, name:'搜索引擎'}
+                ]
+            }
+        ]
+    };
+
+    //初始化echarts实例
+    var myChart = echarts.init(document.getElementById('chartmain'));
+
+    //使用制定的配置项和数据显示图表
+    myChart.setOption(option);
+</script>
+</html>
