@@ -50,3 +50,8 @@
     height: 120px;
     max-height: 120px;
 }
+
+.globalGraph {
+    padding-left: 20px;
+    width: 100%;
+}
