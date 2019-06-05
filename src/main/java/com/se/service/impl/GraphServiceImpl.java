@@ -54,11 +54,16 @@ public class GraphServiceImpl implements GraphService {
 //            System.out.println("flag2");
 //        }
 //        System.out.println("flag3");
-        Set<MyClass> set=myClassRepository.getRegion(project,cname,dc,cd);
+        Set<MyClass> set=myClassRepository.getDirectRegion(project,cname,dc);
         System.out.println("region size:"+set.size());
         for(MyClass c:set){
             System.out.println(c.getName());
         }
+        MyClass center=myClassRepository.findByProjectAndName(project,cname);
+        System.out.println("center:"+center.getName());
+        System.out.println(center.getInDirectCD().size());
+        System.out.println(center.getOutDirectCD().size());
+        System.out.println(center.getSharedDT().size());
         return asD3(set);
     }
 

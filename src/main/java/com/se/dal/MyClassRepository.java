@@ -77,6 +77,15 @@ public interface MyClassRepository extends Neo4jRepository<MyClass, Long> {
             "return path")
     public Set<MyClass> getRegion(@Param("project")String project,@Param("cname")String cname,@Param("dc")double dc,@Param("cd")double cd);
 
+    @Query("match path=((:Class{project:{project},name:{cname}})<-[:CODE_DEPENDENCY*]-()) " +
+            "where all(v in relationships(path) where v.closeness>{dc}) return path\n" +
+            "union\n" +
+            "match path1=((:Class{project:{project},name:{cname}})-[:CODE_DEPENDENCY*]->()) " +
+            "where all(v in relationships(path1) where v.closeness>{dc}) return path1 as path")
+    public Set<MyClass> getDirectRegion(@Param("project")String project,@Param("cname")String cname,@Param("dc")double dc);
+
+    public MyClass findByProjectAndName(String project,String name);
+
 
 //    @Query("match (a)-[r:DATA_DEPENDENCY]->(b) where r.sharedData is not null\n" +
 //            "with id(r) as id,\n" +

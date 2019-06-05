@@ -21,7 +21,7 @@
 
 function getCDCGraph(){
     var pname="iTrust";
-    var cname="LabProcedureDAO";
+    var cname="ResetPasswordAction";
     var dc="0.7";
     var cd="0.9";
     var url="/trace/CDCGraph?project=";

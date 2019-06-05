@@ -75,10 +75,10 @@
 
 <script type="text/javascript">
 
-    var width = 1600, height = 700;
+    var width = 1600, height = 900;
 
     var simulation=d3.forceSimulation()
-        .force("link",d3.forceLink().distance(80).id(d=>d.index))
+        .force("link",d3.forceLink().distance(120).id(d=>d.index))
         .force("charge",d3.forceManyBody().strength(-800))
         // .force("center",d3.forceCenter(width/2,height/2))
         .force("x",d3.forceX(width/2))
@@ -222,7 +222,7 @@
                     return "translate(" + xy[0]+ "," +xy[1] + ")";
                 })
                 return "M" + d.source.x + "," + d.source.y +
-                    " L"+xy[0]+","+xy[1]+" "+
+                    " Q"+xy[0]+","+xy[1]+" "+
                     d.target.x+","+d.target.y;
             });
 
