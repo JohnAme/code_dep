@@ -60,6 +60,7 @@ public class GraphServiceImpl implements GraphService {
             System.out.println(c.getName());
         }
         MyClass center=myClassRepository.findByProjectAndName(project,cname);
+        set.add(center);
         System.out.println("center:"+center.getName());
         System.out.println(center.getInDirectCD().size());
         System.out.println(center.getOutDirectCD().size());

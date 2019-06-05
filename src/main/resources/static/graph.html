@@ -25,7 +25,7 @@
                     </a>
                 </div>
                 <div class="navbar-brand">
-                    <div class="brand">Code Dependency Graph</div>
+                    <div class="brand">CDCGraph</div>
                 </div>
             </div>
         </div>
@@ -44,7 +44,7 @@
 <style type="text/css">
 
     .node { fill:#1B9AF7 ; stroke-color: #fefefe; stroke-width:1px;border-color: #fefefe;}
-    .node.self{fill:#A5DE37;border-color:#9A9A9A;border-width:2px;stroke-color: #fefefe; stroke-width:1px}
+    .node.self{fill:#A5DE37;}
 
     .link {
         fill:none;
@@ -68,6 +68,16 @@
         fill: #666;
 
     }
+    .frame{
+        stroke:#7B72E9;
+        stroke-width: 2px;
+        fill:#9A9A9A;
+        visibility: visible;
+    }
+    .region{
+        opacity: 0.4;
+        fill:#d58512;
+    }
 </style>
 
 <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
@@ -83,7 +93,8 @@
         // .force("center",d3.forceCenter(width/2,height/2))
         .force("x",d3.forceX(width/2))
         .force("y",d3.forceY(height/2))
-        .force("collide",d3.forceCollide(30));
+        // .force("collide",d3.forceCollide(20))
+    ;
 
     var svg = d3.select("#graph").append("svg")
         .attr("width", width).attr("height", height)
@@ -164,7 +175,11 @@
                 var f=d3.format(".4f");
                 return f(d.closeness);})
 
-        var node = g.append("g").selectAll(".node")
+
+        var nodeG=g.append("g");
+        var rectangle=nodeG.append("rect").attr("class","region");
+        var node=nodeG.selectAll(".node")
+        // var node = g.append("svg").selectAll(".node")
             .data(graph.nodes).enter()
             .append("circle")
             .attr("class", function(d){
@@ -231,6 +246,7 @@
             text.attr("transform",function(d){
                 return "translate(" + d.x + "," + d.y + ")";
             })
+            updateRegion(rectangle,links);
         }
 
         function pathTransition(d){
@@ -287,6 +303,35 @@
             }
             return [xa,xy];
             // return "M" + d.source.x + "," + d.source.y +" L"+d.target.x+","+d.target.y+"";
+        }
+
+        function updateRegion(rectangle,links) {
+
+            let minX=3000,minY=3000,maxX=-100,maxY=-100;
+            let count=0;
+            for(let i=0;i<links.length;i++){
+                if(links[i].type=='dataCD'&&links[i].closeness<cd){
+                    continue;
+                }
+                if(links[i].type=='directCD'&&links[i].closeness<dc){
+                    continue;
+                }
+                count++;
+                minX=Math.min(minX,links[i].target.x,links[i].source.x);
+                minY=Math.min(minY,links[i].target.y,links[i].source.y);
+                maxX=Math.max(maxX,links[i].target.x,links[i].source.x);
+                maxY=Math.max(maxY,links[i].target.y,links[i].source.y);
+            }
+            if(0==count){
+                rectangle.attr("class","region hidden");
+            }else{
+                rectangle.attr("class","region");
+                rectangle.attr("x",minX-10);
+                rectangle.attr("y",minY-10);
+                rectangle.attr("width",maxX-minX+20);
+                rectangle.attr('height',maxY-minY+20);
+            }
+
         }
 
     });
